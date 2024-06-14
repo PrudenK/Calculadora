@@ -1,0 +1,32 @@
+.botones-azules{
+    -fx-background-color:  #75a5fe;
+    -fx-border-width: 0.5px;
+    -fx-border-color:  white;
+}
+.botones-azules:hover{
+    -fx-background-color: #4eb9ef;
+}
+.botones-azules-claritos{
+    -fx-background-color: #97b4f8;
+    -fx-border-width: 0.5px;
+    -fx-border-color:  white;
+}
+.botones-azules-claritos:hover{
+    -fx-background-color: #8dc7f6;
+}
+.botones-naranjas{
+    -fx-background-color: #f0bf4c;
+    -fx-border-width: 0.5px;
+    -fx-border-color:  white;
+}
+.botones-naranjas:hover{
+    -fx-background-color: #f8e51f;
+}
+.botones-naranjas-clarito{
+    -fx-background-color: #f3cb84;
+    -fx-border-width: 0.5px;
+    -fx-border-color:  white;
+}
+.botones-naranjas-clarito:hover{
+    -fx-background-color: #f3e788;
+}
