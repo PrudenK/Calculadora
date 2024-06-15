@@ -1,29 +1,24 @@
 package com.example.calculadorafx3;
 
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.input.MouseEvent;
+import javafx.stage.Stage;
 
+import java.net.URL;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
-import java.util.EventListener;
-import java.util.HashSet;
-import java.util.Locale;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.IntStream;
 
-public class Controlador {
-
-    public Controlador() {
-        // Agrega caracteres prohibidos al conjunto
-        for (char c : caracteresProhibidos) {
-            caracteresExcluidos.add(c);
-        }
-        caracteresExcluidos.add('-');
-    }
+public class Controlador implements Initializable {
     private final DecimalFormat df = new DecimalFormat("#.####", new DecimalFormatSymbols(Locale.US));
     private final Pattern  patronCuadradoRaiz = Pattern.compile("^-?\\d+\\.?\\d*$");
     private final Pattern puntoDespuesDelOperador = Pattern.compile("^-?\\d*\\.?\\d*[-+x/%^]\\d+\\..*");
@@ -32,7 +27,19 @@ public class Controlador {
     private final Set<Character> caracteresExcluidos = new HashSet<>();
     private final char[] caracteresProhibidos = new char[]{'+', 'x', '/', '%','^','√'};
     private final String operadores = "+x/%-^";
+    private static Stage stageCalculadora;
+    private double xOffset = 0;
+    private double yOffset = 0;
 
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+        // Agrega caracteres prohibidos al conjunto
+        for (char c : caracteresProhibidos) {
+            caracteresExcluidos.add(c);
+        }
+        caracteresExcluidos.add('-');
+        stageCalculadora = Calcuadora.getStage();
+    }
 
     @FXML
     protected void onButton00() {
@@ -345,5 +352,20 @@ public class Controlador {
         } else if ((txt.endsWith("+") || txt.endsWith("-") || txt.endsWith("/") || txt.endsWith("x") || txt.endsWith("%") || txt.endsWith("^")) && contadorPi <= 1) {
             agregarNumero("π");
         }
+    }
+    @FXML
+    protected void onSalir(){
+        Platform.exit();
+    }
+    @FXML
+    public void presionarRaton(MouseEvent event) {
+        xOffset = event.getSceneX();
+        yOffset = event.getSceneY();
+    }
+    @FXML
+    public void arrastrarRaton(MouseEvent event) {
+        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        stage.setX(event.getScreenX() - xOffset);
+        stage.setY(event.getScreenY() - yOffset);
     }
 }
