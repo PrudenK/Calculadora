@@ -166,10 +166,12 @@ public class Controlador implements Initializable {
         onOperador("^");
     }
     private void onOperador(String operador){
-        boolean menos = primerMenos(pantalla.getText());
-        if (!pantalla.getText().endsWith(".") && !menos && contieneCaracteres(pantalla.getText()) && !pantalla.getText().isEmpty() && pantalla.getText().charAt(pantalla.getText().length()-1) != '-'){
-            if ((pantalla.getText().charAt(0) != '-' || pantalla.getText().length() >= 2) || !pantalla.getText().equals("-") ) {
-                pantalla.setText(pantalla.getText() + operador);
+        if(!pantalla.getText().isEmpty()) {
+            boolean menos = primerMenos(pantalla.getText());
+            if (!pantalla.getText().endsWith(".") && !menos && contieneCaracteres(pantalla.getText()) && !pantalla.getText().isEmpty() && pantalla.getText().charAt(pantalla.getText().length() - 1) != '-') {
+                if ((pantalla.getText().charAt(0) != '-' || pantalla.getText().length() >= 2) || !pantalla.getText().equals("-")) {
+                    pantalla.setText(pantalla.getText() + operador);
+                }
             }
         }
     }
@@ -358,14 +360,16 @@ public class Controlador implements Initializable {
         Platform.exit();
     }
     @FXML
-    public void presionarRaton(MouseEvent event) {
+    protected void presionarRaton(MouseEvent event) {
         xOffset = event.getSceneX();
         yOffset = event.getSceneY();
     }
     @FXML
-    public void arrastrarRaton(MouseEvent event) {
+    protected void arrastrarRaton(MouseEvent event) {
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         stage.setX(event.getScreenX() - xOffset);
         stage.setY(event.getScreenY() - yOffset);
     }
+
+
 }
