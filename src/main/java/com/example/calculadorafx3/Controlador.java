@@ -12,9 +12,11 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 
+import java.io.*;
 import java.net.URL;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.IntStream;
@@ -36,6 +38,26 @@ public class Controlador implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        try {
+            File registro = new File("registro.txt");
+            FileWriter fr = new FileWriter(registro, true);
+            Date fechaRegistro = new Date();
+            SimpleDateFormat sdf = new SimpleDateFormat("EEEE dd 'de' MMMMM 'de' yyyy 'a las' HH:mm:ss",new Locale("es","ES"));
+            String fecha = sdf.format(fechaRegistro);
+
+            BufferedReader brContarLineas = new BufferedReader(new FileReader(registro));
+            int contador = 0;
+            while (brContarLineas.readLine() != null){
+                contador +=1;
+            }
+            String registroF = String.format("Registros -> %-5s Fecha -> %-5s",contador+1,fecha);
+            fr.append(registroF).append("\n");
+            brContarLineas.close();
+            fr.flush();
+            fr.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         // Agrega caracteres prohibidos al conjunto
         for (char c : caracteresProhibidos) {
             caracteresExcluidos.add(c);
@@ -429,7 +451,7 @@ public class Controlador implements Initializable {
                 contador +=1;
             }
         }
-        if(txt.endsWith("0") || txt.contains("∞") || (txt.equals("-0") || txt.equals("-") || txt.equals("0") || txt.isEmpty()) && contador == 0){
+        if(txt.endsWith("0") || txt.contains("∞") || (txt.equals("-0") || txt.equals("-") || txt.isEmpty()) && contador == 0){
             agregarNumero(String.valueOf(num));
         } else if ((txt.endsWith("0") || txt.endsWith("+") || txt.endsWith("-") || txt.endsWith("/") || txt.endsWith("x") || txt.endsWith("%") || txt.endsWith("^")) && contador <= 1) {
             agregarNumero(String.valueOf(num));
