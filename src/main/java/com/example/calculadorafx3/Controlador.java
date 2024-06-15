@@ -9,6 +9,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 
 import java.net.URL;
@@ -22,6 +23,7 @@ public class Controlador implements Initializable {
     private final DecimalFormat df = new DecimalFormat("#.####", new DecimalFormatSymbols(Locale.US));
     private final Pattern  patronCuadradoRaiz = Pattern.compile("^-?\\d+\\.?\\d*$");
     private final Pattern puntoDespuesDelOperador = Pattern.compile("^-?\\d*\\.?\\d*[-+x/%^]\\d+\\..*");
+    @FXML protected GridPane cientifica;
     @FXML
     private Label pantalla;
     private final Set<Character> caracteresExcluidos = new HashSet<>();
@@ -371,5 +373,24 @@ public class Controlador implements Initializable {
         stage.setY(event.getScreenY() - yOffset);
     }
 
-
+    @FXML
+    protected void onCientifica(){
+        ajustarStage(true);
+        pantalla.setPrefWidth(454);
+    }
+    @FXML
+    protected void onBasica(){
+        ajustarStage(false);
+        pantalla.setPrefWidth(247);
+    }
+    private void ajustarStage(boolean expand) {
+        Stage stage = (Stage) cientifica.getScene().getWindow();
+        if (expand) {
+            cientifica.setVisible(true);
+            stage.setWidth(483);
+        } else {
+            cientifica.setVisible(false);
+            stage.setWidth(276);
+        }
+    }
 }

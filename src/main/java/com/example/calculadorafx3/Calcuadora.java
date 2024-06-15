@@ -14,7 +14,7 @@ public class Calcuadora extends Application {
     @Override
     public void start(Stage stage) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(Calcuadora.class.getResource("CalculadoraCompleja.fxml"));
-        Scene scene = new Scene(fxmlLoader.load(), 287, 403);
+        Scene scene = new Scene(fxmlLoader.load(), 276, 403);
 
         stage.setTitle("Calculadora");
         stage.setScene(scene);
