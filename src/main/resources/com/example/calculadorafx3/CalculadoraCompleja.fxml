@@ -85,7 +85,7 @@
             <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
         </rowConstraints>
         <children>
-            <Button fx:id="btn1" mnemonicParsing="false" prefHeight="55.0" prefWidth="50.0" text="B1" />
+            <Button fx:id="idFactorial" mnemonicParsing="false" onAction="#onFactorial" prefHeight="55.0" prefWidth="50.0" styleClass="botonesCientifica" stylesheets="@calc.css" text="!" />
             <Button fx:id="btn2" mnemonicParsing="false" prefHeight="55.0" prefWidth="50.0" text="B2" GridPane.columnIndex="1" />
             <Button fx:id="btn3" mnemonicParsing="false" prefHeight="55.0" prefWidth="50.0" text="B3" GridPane.columnIndex="2" />
             <Button fx:id="btn4" mnemonicParsing="false" prefHeight="55.0" prefWidth="50.0" text="B4" GridPane.columnIndex="3" />
@@ -101,14 +101,14 @@
             <Button fx:id="btn14" mnemonicParsing="false" prefHeight="55.0" prefWidth="50.0" text="B14" GridPane.columnIndex="1" GridPane.rowIndex="3" />
             <Button fx:id="btn15" mnemonicParsing="false" prefHeight="55.0" prefWidth="50.0" text="B15" GridPane.columnIndex="2" GridPane.rowIndex="3" />
             <Button fx:id="btn16" mnemonicParsing="false" prefHeight="55.0" prefWidth="50.0" text="B16" GridPane.columnIndex="3" GridPane.rowIndex="3" />
-            <Button fx:id="btn17" mnemonicParsing="false" prefHeight="55.0" prefWidth="50.0" text="B17" GridPane.rowIndex="4" />
+            <Button fx:id="idE" mnemonicParsing="false" onAction="#onButtonE" prefHeight="55.0" prefWidth="50.0" styleClass="botonesCientifica" stylesheets="@calc.css" text="e" GridPane.rowIndex="4" />
             <Button fx:id="btn18" mnemonicParsing="false" prefHeight="55.0" prefWidth="50.0" text="B18" GridPane.columnIndex="1" GridPane.rowIndex="4" />
             <Button fx:id="btn19" mnemonicParsing="false" prefHeight="55.0" prefWidth="50.0" text="B19" GridPane.columnIndex="2" GridPane.rowIndex="4" />
             <Button fx:id="btn20" mnemonicParsing="false" prefHeight="55.0" prefWidth="50.0" text="B20" GridPane.columnIndex="3" GridPane.rowIndex="4" />
         </children>
     </GridPane>
 
-    <MenuBar layoutX="14.0" layoutY="14.0">
+    <MenuBar layoutX="14.0" layoutY="14.0" styleClass="menuu" stylesheets="@calc.css">
         <menus>
             <Menu mnemonicParsing="false" text="Opciones">
                 <items>

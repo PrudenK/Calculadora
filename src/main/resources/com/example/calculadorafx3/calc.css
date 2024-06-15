@@ -30,3 +30,15 @@
 .botones-naranjas-clarito:hover{
     -fx-background-color: #f3e788;
 }
+.menuu{
+    -fx-text-fill: white;
+    -fx-background-color: #a0a4a0;
+}
+.botonesCientifica {
+    -fx-background-color: #4065f8;
+    -fx-border-width: 0.5px;
+    -fx-border-color: white;
+    -fx-text-fill: white;
+    -fx-font-size: 14px; /* Tamaño de la fuente */
+    -fx-font-weight: bold; /* Negrita */
+}

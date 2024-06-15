@@ -21,7 +21,8 @@ import java.util.stream.IntStream;
 
 public class Controlador implements Initializable {
     private final DecimalFormat df = new DecimalFormat("#.####", new DecimalFormatSymbols(Locale.US));
-    private final Pattern  patronCuadradoRaiz = Pattern.compile("^-?\\d+\\.?\\d*$");
+    private final Pattern patronCuadradoRaiz = Pattern.compile("^-?\\d+\\.?\\d*$");
+    private final Pattern patronNumEnteroPositivo = Pattern.compile("^\\d+$");
     private final Pattern puntoDespuesDelOperador = Pattern.compile("^-?\\d*\\.?\\d*[-+x/%^]\\d+\\..*");
     @FXML protected GridPane cientifica;
     @FXML
@@ -51,8 +52,8 @@ public class Controlador implements Initializable {
         if(txt.contains("∞")){
             pantalla.setText("0");
         }else {
-            if(!txt.equals("-0") && !txt.equals("0") && !txt.endsWith("π")) {
-                if ((pattern.matcher(pantalla.getText()).matches() && pantalla.getText().endsWith("0")) || txt.contains("π") ) {
+            if(!txt.equals("-0") && !txt.equals("0") && !txt.endsWith("π") && !txt.endsWith("e") ) {
+                if ((pattern.matcher(pantalla.getText()).matches() && pantalla.getText().endsWith("0")) || txt.contains("π") || txt.contains("e")) {
                     if (txt.startsWith("-")) {
                         txt = txt.substring(1);
                     }
@@ -63,9 +64,9 @@ public class Controlador implements Initializable {
                             break;
                         }
                     }
-                    if ((puntoDespuesDelOperador.matcher(txt).matches() || !txt.matches("^-?(π|(\\d*\\.?\\d*))[-+x/%^]0.*")) && !txt.startsWith("π")) {
+                    if ((puntoDespuesDelOperador.matcher(txt).matches() || !txt.matches("^-?(e|π|(\\d*\\.?\\d*))[-+x/%^]0.*")) && !txt.startsWith("π") && !txt.startsWith("e")) {
                         pantalla.setText(pantalla.getText() + "00");
-                    } else if ((pantalla.getText().contains(".") || contieneNumero) && txt.contains("π")) {
+                    } else if ((pantalla.getText().contains(".") || contieneNumero) && (txt.contains("π") || txt.contains("e"))) {
                         pantalla.setText(pantalla.getText() + "00");
                     }else if (!pantalla.getText().endsWith("0")){
                         pantalla.setText(pantalla.getText() + "0");
@@ -182,7 +183,8 @@ public class Controlador implements Initializable {
         String textoCalc = pantalla.getText();
         boolean ultNumPunto = false;
 
-        if (!textoCalc.isEmpty() && !textoCalc.equals("-") && !caracteresExcluidos.contains(textoCalc.charAt(textoCalc.length() - 1)) && !textoCalc.endsWith("π")) {
+        if (!textoCalc.isEmpty() && !textoCalc.equals("-") && !caracteresExcluidos.contains(textoCalc.charAt(textoCalc.length() - 1))
+                && !textoCalc.endsWith("π") && !textoCalc.endsWith("e")) {
             // Verifica si el último número ya tiene un punto
             String[] numeros = textoCalc.split("[+\\-x/^√%]"); //operadores permitidos para poner un punto después
             if (numeros.length > 0) {
@@ -213,6 +215,14 @@ public class Controlador implements Initializable {
                     pantalla.setText("3.1415");
                 }
             }
+            // todo factorizable quizas
+            if (txt.equals("e")) {
+                if (menosDelante) {
+                    pantalla.setText("-2.7182");
+                } else {
+                    pantalla.setText("2.7182");
+                }
+            }
 
             if (txt.contains("+") || txt.contains("/") || txt.contains("%") || txt.contains("x") || txt.contains("-") || txt.contains("^")) {
                 double operando1;
@@ -220,7 +230,9 @@ public class Controlador implements Initializable {
 
                 if(txt.substring(0, indiceOperadorInt).equals("π")){
                     operando1 = 3.1415;
-                }else {
+                } else if (txt.substring(0, indiceOperadorInt).equals("e")) {
+                    operando1 = 2.7182;
+                } else {
                     operando1 = Double.parseDouble(txt.substring(0, indiceOperadorInt));
                 }
 
@@ -233,7 +245,9 @@ public class Controlador implements Initializable {
                 double operando2;
                 if(txt.substring(indiceOperadorInt + 1).equals("π")){
                     operando2 = 3.1415;
-                }else {
+                } else if (txt.substring(indiceOperadorInt + 1).equals("e")) {
+                    operando2 = 2.7182;
+                } else {
                     operando2 = Double.parseDouble(txt.substring(indiceOperadorInt + 1));
                 }
 
@@ -288,9 +302,9 @@ public class Controlador implements Initializable {
             pantalla.setText(num);
         }else {
             Pattern pattern = Pattern.compile("^-?\\d*\\.?\\d*[-+x/%^]0$");
-            Pattern patterPi = Pattern.compile("^-?π[-+x/%^]0$");
-            Pattern pi = Pattern.compile("^-?π$");
-            if (!pi.matcher(pantalla.getText()).matches() && !pantalla.getText().endsWith("π")) {
+            Pattern patterPi = Pattern.compile("^-?[πe][-+x/%^]0$");
+            Pattern pi = Pattern.compile("^-?[πe]$");
+            if (!pi.matcher(pantalla.getText()).matches() && (!pantalla.getText().endsWith("π") || !pantalla.getText().endsWith("e"))) {
                 if (pantalla.getText().equals("0")) {
                     pantalla.setText(num);
                 } else if (pantalla.getText().equals("-0")) {
@@ -326,6 +340,8 @@ public class Controlador implements Initializable {
             pantalla.setText(df.format(Math.pow(Double.parseDouble(pantalla.getText()),2)));
         }else if (pantalla.getText().equals("π") || pantalla.getText().equals("-π")) {
             pantalla.setText(df.format(Math.pow(3.1415,2)));
+        }else if (pantalla.getText().equals("e") || pantalla.getText().equals("-e")) {
+            pantalla.setText(df.format(Math.pow(2.7182,2)));
         }
     }
     @FXML
@@ -338,23 +354,8 @@ public class Controlador implements Initializable {
             }
         }else if (pantalla.getText().equals("π")) {
             pantalla.setText(df.format(Math.sqrt(3.1415)));
-        }
-    }
-    @FXML
-    protected void onPi() {
-        // Pattern pattern = Pattern.compile("^-?(π|[0-9]+(\\.[0-9]+)?)[-+x/%^](π|[0-9]+(\\.[0-9]+)?)$");
-        // Pattern patternPi = Pattern.compile("^-?(π|\\d*\\.?\\d*)[-+x/%^]]$");
-        String txt = pantalla.getText();
-        int contadorPi = 0;
-        for (int i = 0; i < txt.length(); i++) {
-            if(txt.charAt(i) == 'π'){
-                contadorPi +=1;
-            }
-        }
-        if(txt.contains("∞") || (txt.equals("-0") || txt.equals("-") || txt.equals("0") || txt.isEmpty()) && contadorPi == 0){
-            agregarNumero("π");
-        } else if ((txt.endsWith("+") || txt.endsWith("-") || txt.endsWith("/") || txt.endsWith("x") || txt.endsWith("%") || txt.endsWith("^")) && contadorPi <= 1) {
-            agregarNumero("π");
+        }else if (pantalla.getText().equals("e")) {
+            pantalla.setText(df.format(Math.sqrt(2.7182)));
         }
     }
     @FXML
@@ -391,6 +392,47 @@ public class Controlador implements Initializable {
         } else {
             cientifica.setVisible(false);
             stage.setWidth(276);
+        }
+    }
+    @FXML
+    protected void onFactorial(){
+        if(patronNumEnteroPositivo.matcher(pantalla.getText()).matches()){
+            int num = Integer.parseInt(pantalla.getText());
+            if(num > 25){
+                pantalla.setText("∞");
+            }else {
+                long resultado = 1;
+                for (long i = 1; i < num + 1; i++) {
+                    resultado *= i;
+                }
+                pantalla.setText(String.valueOf(resultado));
+            }
+        }else {
+            mostrarAlerta("No se puede aplicar factorial a números negativos, decimales u otras expresiones");
+        }
+    }
+    @FXML
+    protected void onButtonE(){
+        expresionesMatematicas('e');
+    }
+    @FXML
+    protected void onPi() {
+        // Pattern pattern = Pattern.compile("^-?(π|[0-9]+(\\.[0-9]+)?)[-+x/%^](π|[0-9]+(\\.[0-9]+)?)$");
+        // Pattern patternPi = Pattern.compile("^-?(π|\\d*\\.?\\d*)[-+x/%^]]$");
+        expresionesMatematicas('π');
+    }
+    private void expresionesMatematicas(char num){
+        String txt = pantalla.getText();
+        int contador = 0;
+        for (int i = 0; i < txt.length(); i++) {
+            if(txt.charAt(i) == num){
+                contador +=1;
+            }
+        }
+        if(txt.endsWith("0") || txt.contains("∞") || (txt.equals("-0") || txt.equals("-") || txt.equals("0") || txt.isEmpty()) && contador == 0){
+            agregarNumero(String.valueOf(num));
+        } else if ((txt.endsWith("0") || txt.endsWith("+") || txt.endsWith("-") || txt.endsWith("/") || txt.endsWith("x") || txt.endsWith("%") || txt.endsWith("^")) && contador <= 1) {
+            agregarNumero(String.valueOf(num));
         }
     }
 }
