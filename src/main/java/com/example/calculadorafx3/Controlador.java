@@ -35,7 +35,7 @@ public class Controlador implements Initializable {
     private static Stage stageCalculadora;
     private double xOffset = 0;
     private double yOffset = 0;
-
+    private ArrayList<String> operandosComplejos = new ArrayList<>();
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         try {
@@ -64,23 +64,28 @@ public class Controlador implements Initializable {
         }
         caracteresExcluidos.add('-');
         stageCalculadora = Calcuadora.getStage();
+        operandosComplejos.add("ln(");
+        operandosComplejos.add("sen(");
+        operandosComplejos.add("cos(");
+        operandosComplejos.add("tan(");
     }
-
+    private String buscarOperadorComplejo(String txt){
+        String cadenaOpComplejo = null;
+        for (String subcadena : operandosComplejos) {
+            if (txt.contains(subcadena)) {
+                cadenaOpComplejo = subcadena;
+                break;
+            }
+        }
+        return cadenaOpComplejo;
+    }
     @FXML
     protected void onButton00() {
         String txt = pantalla.getText();
-        // pantalla.getText().charAt(pantalla.getText().length()-1) != '0'
         Pattern pattern = Pattern.compile("^-?\\d*\\.?\\d*[-+x/%^]\\d*\\.?\\d*.*");
-        if(txt.contains("ln(")){
-            int indicePrimerParentesis = txt.indexOf("(");
-            int indiceUltimoParentesis = txt.indexOf(")");
-            if(txt.contains("ln()")){
-                pantalla.setText(txt.substring(0,indicePrimerParentesis+1)+"0)");
-            } else if (!txt.contains("ln(0)") && txt.contains(".")) {
-                pantalla.setText(txt.substring(0,indiceUltimoParentesis)+"00)");
-            } else if (!txt.contains("ln(0)")) {
-                pantalla.setText(txt.substring(0,indiceUltimoParentesis)+"00)");
-            }
+        String operandoComplejo = buscarOperadorComplejo(txt);
+        if(operandoComplejo != null){
+            operandosComplejos00(operandoComplejo+")");
         }else if(txt.contains("∞")){
             pantalla.setText("0");
         }else {
@@ -120,7 +125,28 @@ public class Controlador implements Initializable {
                 }
             }
         }
-
+    }
+    private void operandosComplejos00(String operando){
+        String txt = pantalla.getText();
+        boolean menosDelante = false;
+        if(txt.startsWith("-")){
+            txt = txt.substring(1);
+            menosDelante = true;
+        }
+        int indicePrimerParentesis = txt.indexOf("(");
+        int indiceUltimoParentesis = txt.indexOf(")");
+        String operandoSinParentesisFinal = txt.substring(0,indicePrimerParentesis+1);
+        if(txt.contains(operando)){
+            txt = txt.substring(0,indicePrimerParentesis+1)+"0)";
+        } else if (!txt.contains(operandoSinParentesisFinal+"0)") && txt.contains(".")) {
+            txt = txt.substring(0,indiceUltimoParentesis)+"00)";
+        } else if (!txt.contains(operandoSinParentesisFinal+"0)")) {
+            txt = txt.substring(0,indiceUltimoParentesis)+"00)";
+        }
+        if (menosDelante){
+            txt = "-"+txt;
+        }
+        pantalla.setText(txt);
     }
     @FXML
     protected void onButton0() {
@@ -191,6 +217,18 @@ public class Controlador implements Initializable {
     @FXML
     protected void onButtonMenos() {
         onOperador("-");
+        String txt = pantalla.getText();
+        String opComlejo = buscarOperadorComplejo(txt);
+        if(opComlejo != null && !opComlejo.equals("ln(")){
+            int indicePrimerParentesis = txt.indexOf("(");
+            int indiceUltimoParentesis = txt.indexOf(")");
+            if(txt.contains(opComlejo+"-")){
+                int indiceUltimoMenos = txt.lastIndexOf("-");
+                pantalla.setText(txt.substring(0, indicePrimerParentesis + 1) + txt.substring(indiceUltimoMenos + 1, indiceUltimoParentesis + 1));
+            }else {
+                pantalla.setText(txt.substring(0, indicePrimerParentesis + 1) + "-" + txt.substring(indicePrimerParentesis + 1, indiceUltimoParentesis + 1));
+            }
+        }
     }
     @FXML
     protected void onButtonPorcentaje() {
@@ -201,7 +239,8 @@ public class Controlador implements Initializable {
         onOperador("^");
     }
     private void onOperador(String operador){
-        if(!pantalla.getText().isEmpty() && !pantalla.getText().contains("ln(")) {
+        String opComlejo = buscarOperadorComplejo(pantalla.getText());
+        if(!pantalla.getText().isEmpty() && opComlejo == null) {
             boolean menos = primerMenos(pantalla.getText());
             if (!pantalla.getText().endsWith(".") && !menos && contieneCaracteres(pantalla.getText()) && !pantalla.getText().isEmpty() && pantalla.getText().charAt(pantalla.getText().length() - 1) != '-') {
                 if ((pantalla.getText().charAt(0) != '-' || pantalla.getText().length() >= 2) || !pantalla.getText().equals("-")) {
@@ -212,23 +251,25 @@ public class Controlador implements Initializable {
     }
     @FXML
     protected void onButtonPunto(){
-        String textoCalc = pantalla.getText();
+        String txt = pantalla.getText();
         boolean ultNumPunto = false;
-        if (!pantalla.getText().contains("ln(")) {
-            if (!textoCalc.isEmpty() && !textoCalc.equals("-") && !caracteresExcluidos.contains(textoCalc.charAt(textoCalc.length() - 1))
-                    && !textoCalc.endsWith("π") && !textoCalc.endsWith("e")) {
+        String opComlejo = buscarOperadorComplejo(txt);
+        if (opComlejo == null) {
+            if (!txt.isEmpty() && !txt.equals("-") && !caracteresExcluidos.contains(txt.charAt(txt.length() - 1))
+                    && !txt.endsWith("π") && !txt.endsWith("e")) {
                 // Verifica si el último número ya tiene un punto
-                String[] numeros = textoCalc.split("[+\\-x/^√%]"); //operadores permitidos para poner un punto después
+                String[] numeros = txt.split("[+\\-x/^√%]"); //operadores permitidos para poner un punto después
                 if (numeros.length > 0) {
                     ultNumPunto = numeros[numeros.length - 1].contains(".");
                 }
                 // Si no hay punto después del último número, agrega el punto
                 if (!ultNumPunto) {
-                    pantalla.setText(textoCalc + ".");
+                    pantalla.setText(txt + ".");
                 }
             }
         }else {
-            if(!pantalla.getText().contains(".") && !pantalla.getText().contains("ln()")){
+            if(!pantalla.getText().contains(".") && !pantalla.getText().contains(opComlejo+")") && !pantalla.getText().contains(opComlejo+"e)")
+                    && !pantalla.getText().contains(opComlejo+"π)")){
                 int indiceultimoParentesis = pantalla.getText().lastIndexOf(")");
                 String cadenaAnterior = pantalla.getText().substring(0, indiceultimoParentesis);
                 pantalla.setText(cadenaAnterior + ".)");
@@ -243,16 +284,55 @@ public class Controlador implements Initializable {
             txt = txt.substring(1);
             menosDelante = true;
         }
-        if (txt.contains("ln(") && !txt.contains("ln()")){
-            double numeroLn = Math.log(Double.parseDouble(txt.substring(3,txt.length()-1)));
-            if(menosDelante){
-                numeroLn *= -1;
+        String opComlejo = buscarOperadorComplejo(pantalla.getText());
+        if (opComlejo != null && !txt.endsWith("()") && !txt.endsWith("(-)")){
+            boolean menosDelanteOpComplejo = false;
+            boolean errorTangente = false;
+            int indicePrimerParentesis = txt.indexOf("(");
+            int indiceUltimoParentesis = txt.indexOf(")");
+            double operando;
+            String operandoString = txt.substring(indicePrimerParentesis+1,indiceUltimoParentesis);
+            if(operandoString.contains("-")){
+                menosDelanteOpComplejo = true;
+                operandoString = operandoString.substring(1);
             }
-            pantalla.setText(String.valueOf(df.format(numeroLn)));
+            if(operandoString.equals("e")){
+                operando = 2.7182;
+            } else if (operandoString.equals("π")) {
+                operando = 3.1415;
+            }else {
+                operando = Double.parseDouble(operandoString);
+            }
+
+            if(menosDelanteOpComplejo){
+                operando *= -1;
+            }
+
+
+            if(txt.contains("ln(")){
+               operando = Math.log(operando);
+            } else if (txt.contains("sen(")) {
+                operando = Math.sin(Math.toRadians(operando));
+            }else if (txt.contains("cos(")) {
+                operando = Math.cos(Math.toRadians(operando));
+            }else if (txt.contains("tan(")) {
+                if(operando % 90 == 0 && operando % 180 != 0){
+                    errorTangente = true;
+                    mostrarAlerta("Chavalíiiin no existe la tangete de un número que sea múltiplo de 90 y no de 180\nTiende a infinito y esas cosas raras");
+                }else {
+                    operando = Math.tan(Math.toRadians(operando));
+                }
+            }
+
+            if(menosDelante){
+                operando *= -1;
+            }
+            if(!errorTangente) {
+                pantalla.setText(df.format(operando));
+            }
         }else if (txt.endsWith("+") || txt.endsWith("-") || txt.endsWith("/") || txt.endsWith("x") || txt.endsWith("%") || txt.endsWith("^")) {
             mostrarAlerta("Introduce el segundo número");
         }else {
-
             if (txt.equals("π")) {
                 if (menosDelante) {
                     pantalla.setText("-3.1415");
@@ -269,7 +349,7 @@ public class Controlador implements Initializable {
                 }
             }
 
-            if (txt.contains("+") || txt.contains("/") || txt.contains("%") || txt.contains("x") || txt.contains("-") || txt.contains("^")) {
+            if ((txt.contains("+") || txt.contains("/") || txt.contains("%") || txt.contains("x") || txt.contains("-") || txt.contains("^")) && opComlejo == null) {
                 double operando1;
                 int indiceOperadorInt = indiceOperador(txt);
 
@@ -344,11 +424,16 @@ public class Controlador implements Initializable {
     }
     private void agregarNumero(String num) {
         String txt = pantalla.getText();
-        if(txt.contains("ln(") ) {
-            if(!txt.contains("e") && !txt.contains("π")) {
+        String opComlejo = buscarOperadorComplejo(txt);
+        if(opComlejo != null) {
+            if((!txt.contains("e") || (txt.contains("sen(") && !txt.contains("sen(e)"))) && !txt.contains("π")) {
                 int indiceultimoParentesis = txt.lastIndexOf(")");
                 String cadenaAnterior = txt.substring(0, indiceultimoParentesis);
-                pantalla.setText(cadenaAnterior + num + ")");
+                if(txt.contains("(0)")){
+                    pantalla.setText(cadenaAnterior.substring(0,cadenaAnterior.length()-1)+num+")");
+                }else {
+                    pantalla.setText(cadenaAnterior + num + ")");
+                }
             }
         }else if(txt.contains("∞")){
             pantalla.setText(num);
@@ -378,20 +463,26 @@ public class Controlador implements Initializable {
     }
     @FXML
     protected void onAtras() {
+        boolean opSolo = false;
+        String txt = pantalla.getText();
         String atras;
         StringBuilder strB = new StringBuilder(pantalla.getText());
-        if(!pantalla.getText().contains("ln(")) {
+        String opComlejo = buscarOperadorComplejo(txt);
+        if(opComlejo == null) {
             if (!pantalla.getText().isEmpty()) {
                 strB.deleteCharAt(pantalla.getText().length() - 1);
             }
         }else {
-            if(pantalla.getText().length() > 4 && !pantalla.getText().startsWith("-")){
+            if(!pantalla.getText().contains(opComlejo+")")) {
                 strB.deleteCharAt(pantalla.getText().length() - 2);
-            } else if (pantalla.getText().length() > 5 && pantalla.getText().startsWith("-")) {
-                strB.deleteCharAt(pantalla.getText().length() - 2);
+            }else {
+                opSolo = true;
             }
         }
         atras = String.valueOf(strB);
+        if(opSolo){
+            atras = "";
+        }
         pantalla.setText(atras);
     }
     @FXML
@@ -483,13 +574,14 @@ public class Controlador implements Initializable {
     }
     private void expresionesMatematicas(char num){
         String txt = pantalla.getText();
+        String opComlejo = buscarOperadorComplejo(pantalla.getText());
         int contador = 0;
         for (int i = 0; i < txt.length(); i++) {
             if(txt.charAt(i) == num){
                 contador +=1;
             }
         }
-        if( txt.contains("ln()") || txt.endsWith("0") || txt.contains("∞") || (txt.equals("-0") || txt.equals("-") || txt.isEmpty()) && contador == 0){
+        if(opComlejo != null || txt.endsWith("0") || txt.contains("∞") || (txt.equals("-0") || txt.equals("-") || txt.isEmpty()) && contador == 0){
             agregarNumero(String.valueOf(num));
         } else if ((txt.endsWith("0") || txt.endsWith("+") || txt.endsWith("-") || txt.endsWith("/") || txt.endsWith("x") || txt.endsWith("%") || txt.endsWith("^")) && contador <= 1) {
             agregarNumero(String.valueOf(num));
@@ -497,6 +589,26 @@ public class Controlador implements Initializable {
     }
     @FXML
     protected void onNeperiano(){
-        pantalla.setText("ln()");
+        agregarOperandoComplejoMenosDelante("ln()");
+    }
+    @FXML
+    protected void onSeno(){
+        agregarOperandoComplejoMenosDelante("sen()");
+    }
+    @FXML
+    protected void onCoseno(){
+        agregarOperandoComplejoMenosDelante("cos()");
+    }
+    @FXML
+    protected void onTangente(){
+        agregarOperandoComplejoMenosDelante("tan()");
+    }
+
+    private void agregarOperandoComplejoMenosDelante(String op){
+        if(pantalla.getText().startsWith("-")){
+            pantalla.setText("-"+op);
+        }else {
+            pantalla.setText(op);
+        }
     }
 }
