@@ -71,7 +71,17 @@ public class Controlador implements Initializable {
         String txt = pantalla.getText();
         // pantalla.getText().charAt(pantalla.getText().length()-1) != '0'
         Pattern pattern = Pattern.compile("^-?\\d*\\.?\\d*[-+x/%^]\\d*\\.?\\d*.*");
-        if(txt.contains("∞")){
+        if(txt.contains("ln(")){
+            int indicePrimerParentesis = txt.indexOf("(");
+            int indiceUltimoParentesis = txt.indexOf(")");
+            if(txt.contains("ln()")){
+                pantalla.setText(txt.substring(0,indicePrimerParentesis+1)+"0)");
+            } else if (!txt.contains("ln(0)") && txt.contains(".")) {
+                pantalla.setText(txt.substring(0,indiceUltimoParentesis)+"00)");
+            } else if (!txt.contains("ln(0)")) {
+                pantalla.setText(txt.substring(0,indiceUltimoParentesis)+"00)");
+            }
+        }else if(txt.contains("∞")){
             pantalla.setText("0");
         }else {
             if(!txt.equals("-0") && !txt.equals("0") && !txt.endsWith("π") && !txt.endsWith("e") ) {
@@ -191,7 +201,7 @@ public class Controlador implements Initializable {
         onOperador("^");
     }
     private void onOperador(String operador){
-        if(!pantalla.getText().isEmpty()) {
+        if(!pantalla.getText().isEmpty() && !pantalla.getText().contains("ln(")) {
             boolean menos = primerMenos(pantalla.getText());
             if (!pantalla.getText().endsWith(".") && !menos && contieneCaracteres(pantalla.getText()) && !pantalla.getText().isEmpty() && pantalla.getText().charAt(pantalla.getText().length() - 1) != '-') {
                 if ((pantalla.getText().charAt(0) != '-' || pantalla.getText().length() >= 2) || !pantalla.getText().equals("-")) {
@@ -204,17 +214,24 @@ public class Controlador implements Initializable {
     protected void onButtonPunto(){
         String textoCalc = pantalla.getText();
         boolean ultNumPunto = false;
-
-        if (!textoCalc.isEmpty() && !textoCalc.equals("-") && !caracteresExcluidos.contains(textoCalc.charAt(textoCalc.length() - 1))
-                && !textoCalc.endsWith("π") && !textoCalc.endsWith("e")) {
-            // Verifica si el último número ya tiene un punto
-            String[] numeros = textoCalc.split("[+\\-x/^√%]"); //operadores permitidos para poner un punto después
-            if (numeros.length > 0) {
-                ultNumPunto = numeros[numeros.length - 1].contains(".");
+        if (!pantalla.getText().contains("ln(")) {
+            if (!textoCalc.isEmpty() && !textoCalc.equals("-") && !caracteresExcluidos.contains(textoCalc.charAt(textoCalc.length() - 1))
+                    && !textoCalc.endsWith("π") && !textoCalc.endsWith("e")) {
+                // Verifica si el último número ya tiene un punto
+                String[] numeros = textoCalc.split("[+\\-x/^√%]"); //operadores permitidos para poner un punto después
+                if (numeros.length > 0) {
+                    ultNumPunto = numeros[numeros.length - 1].contains(".");
+                }
+                // Si no hay punto después del último número, agrega el punto
+                if (!ultNumPunto) {
+                    pantalla.setText(textoCalc + ".");
+                }
             }
-            // Si no hay punto después del último número, agrega el punto
-            if (!ultNumPunto) {
-                pantalla.setText(textoCalc + ".");
+        }else {
+            if(!pantalla.getText().contains(".") && !pantalla.getText().contains("ln()")){
+                int indiceultimoParentesis = pantalla.getText().lastIndexOf(")");
+                String cadenaAnterior = pantalla.getText().substring(0, indiceultimoParentesis);
+                pantalla.setText(cadenaAnterior + ".)");
             }
         }
     }
@@ -226,7 +243,13 @@ public class Controlador implements Initializable {
             txt = txt.substring(1);
             menosDelante = true;
         }
-        if (txt.endsWith("+") || txt.endsWith("-") || txt.endsWith("/") || txt.endsWith("x") || txt.endsWith("%") || txt.endsWith("^")) {
+        if (txt.contains("ln(") && !txt.contains("ln()")){
+            double numeroLn = Math.log(Double.parseDouble(txt.substring(3,txt.length()-1)));
+            if(menosDelante){
+                numeroLn *= -1;
+            }
+            pantalla.setText(String.valueOf(df.format(numeroLn)));
+        }else if (txt.endsWith("+") || txt.endsWith("-") || txt.endsWith("/") || txt.endsWith("x") || txt.endsWith("%") || txt.endsWith("^")) {
             mostrarAlerta("Introduce el segundo número");
         }else {
 
@@ -320,7 +343,14 @@ public class Controlador implements Initializable {
         return true;
     }
     private void agregarNumero(String num) {
-        if(pantalla.getText().contains("∞")){
+        String txt = pantalla.getText();
+        if(txt.contains("ln(") ) {
+            if(!txt.contains("e") && !txt.contains("π")) {
+                int indiceultimoParentesis = txt.lastIndexOf(")");
+                String cadenaAnterior = txt.substring(0, indiceultimoParentesis);
+                pantalla.setText(cadenaAnterior + num + ")");
+            }
+        }else if(txt.contains("∞")){
             pantalla.setText(num);
         }else {
             Pattern pattern = Pattern.compile("^-?\\d*\\.?\\d*[-+x/%^]0$");
@@ -349,12 +379,20 @@ public class Controlador implements Initializable {
     @FXML
     protected void onAtras() {
         String atras;
-        if(!pantalla.getText().isEmpty()){
-            StringBuilder strB = new StringBuilder(pantalla.getText());
-            strB.deleteCharAt(pantalla.getText().length()-1);
-            atras = String.valueOf(strB);
-            pantalla.setText(atras);
+        StringBuilder strB = new StringBuilder(pantalla.getText());
+        if(!pantalla.getText().contains("ln(")) {
+            if (!pantalla.getText().isEmpty()) {
+                strB.deleteCharAt(pantalla.getText().length() - 1);
+            }
+        }else {
+            if(pantalla.getText().length() > 4 && !pantalla.getText().startsWith("-")){
+                strB.deleteCharAt(pantalla.getText().length() - 2);
+            } else if (pantalla.getText().length() > 5 && pantalla.getText().startsWith("-")) {
+                strB.deleteCharAt(pantalla.getText().length() - 2);
+            }
         }
+        atras = String.valueOf(strB);
+        pantalla.setText(atras);
     }
     @FXML
     protected void onCuadrado() {
@@ -451,10 +489,14 @@ public class Controlador implements Initializable {
                 contador +=1;
             }
         }
-        if(txt.endsWith("0") || txt.contains("∞") || (txt.equals("-0") || txt.equals("-") || txt.isEmpty()) && contador == 0){
+        if( txt.contains("ln()") || txt.endsWith("0") || txt.contains("∞") || (txt.equals("-0") || txt.equals("-") || txt.isEmpty()) && contador == 0){
             agregarNumero(String.valueOf(num));
         } else if ((txt.endsWith("0") || txt.endsWith("+") || txt.endsWith("-") || txt.endsWith("/") || txt.endsWith("x") || txt.endsWith("%") || txt.endsWith("^")) && contador <= 1) {
             agregarNumero(String.valueOf(num));
         }
+    }
+    @FXML
+    protected void onNeperiano(){
+        pantalla.setText("ln()");
     }
 }
