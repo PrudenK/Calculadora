@@ -71,6 +71,7 @@ public class Controlador implements Initializable {
         operandosComplejos.add("ArcSen(");
         operandosComplejos.add("ArcCos(");
         operandosComplejos.add("ArcTan(");
+        operandosComplejos.add("log10(");
     }
     private String buscarOperadorComplejo(String txt){
         String cadenaOpComplejo = null;
@@ -224,7 +225,7 @@ public class Controlador implements Initializable {
         onOperador("-");
         String txt = pantalla.getText();
         String opComlejo = buscarOperadorComplejo(txt);
-        if(opComlejo != null && !opComlejo.equals("ln(")){
+        if(opComlejo != null && !opComlejo.equals("ln(") && !opComlejo.equals("log10(")){
             int indicePrimerParentesis = txt.indexOf("(");
             int indiceUltimoParentesis = txt.indexOf(")");
             if(txt.contains(opComlejo+"-")){
@@ -294,6 +295,7 @@ public class Controlador implements Initializable {
             boolean menosDelanteOpComplejo = false;
             boolean errorTangente = false;
             boolean errorArcos = false;
+            boolean errorLogaritmo = false;
             int indicePrimerParentesis = txt.indexOf("(");
             int indiceUltimoParentesis = txt.indexOf(")");
             double operando;
@@ -316,7 +318,12 @@ public class Controlador implements Initializable {
 
 
             if(txt.contains("ln(")){
-               operando = Math.log(operando);
+               if(Double.parseDouble(String.valueOf(operando)) == 0.0) {
+                   mostrarAlerta("Fieraaa que no puedes hacer un logarítmo neperiano de 0");
+                   errorLogaritmo = true;
+               }else {
+                   operando = Math.log(operando);
+               }
             } else if (txt.contains("en(")) {
                 if(txt.contains("Arc")){
                     if(operando > 1 || operando < -1){
@@ -350,12 +357,19 @@ public class Controlador implements Initializable {
                         operando = Math.tan(Math.toRadians(operando));
                     }
                 }
+            } else if (txt.contains("log10(")) {
+                if(Double.parseDouble(String.valueOf(operando)) == 0.0) {
+                    mostrarAlerta("Fieraaa que no puedes hacer un logarítmo de 0");
+                    errorLogaritmo = true;
+                }else {
+                    operando = Math.log10(operando);
+                }
             }
 
             if(menosDelante){
                 operando *= -1;
             }
-            if(!errorTangente && !errorArcos) {
+            if(!errorTangente && !errorArcos && !errorLogaritmo) {
                 pantalla.setText(df.format(operando));
             }
         }else if (txt.endsWith("+") || txt.endsWith("-") || txt.endsWith("/") || txt.endsWith("x") || txt.endsWith("%") || txt.endsWith("^")) {
@@ -609,7 +623,8 @@ public class Controlador implements Initializable {
                 contador +=1;
             }
         }
-        if( (txt.contains("(-0)") || txt.contains("(0)") || txt.contains("(-)") || (txt.contains("()")) && opComlejo != null) || txt.endsWith("0") || txt.contains("∞") || (txt.equals("-0") || txt.equals("-") || txt.isEmpty()) && contador == 0){
+        if( (txt.contains("(-0)") || txt.contains("(0)") || txt.contains("(-)") || (txt.contains("()")) && opComlejo != null)
+                || txt.endsWith("0") || txt.contains("∞") || (txt.equals("-0") || txt.equals("-") || txt.isEmpty()) && contador == 0){
             agregarNumero(String.valueOf(num));
         } else if ((txt.endsWith("0") || txt.endsWith("+") || txt.endsWith("-") || txt.endsWith("/") || txt.endsWith("x") || txt.endsWith("%") || txt.endsWith("^")) && contador <= 1) {
             agregarNumero(String.valueOf(num));
@@ -651,6 +666,10 @@ public class Controlador implements Initializable {
         agregarOperandoComplejoMenosDelante("ArcTan()");
     }
     @FXML
+    protected void onLog10(){
+        agregarOperandoComplejoMenosDelante("log10()");
+    }
+    @FXML
     protected void onInvertir(){
         if(patronCuadradoRaiz.matcher(pantalla.getText()).matches()){
             pantalla.setText(df.format(Math.pow(Double.parseDouble(pantalla.getText()),-1)));
@@ -675,4 +694,5 @@ public class Controlador implements Initializable {
             pantalla.setText(String.valueOf(value[0]));
         }
     }
+
 }

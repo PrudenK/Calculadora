@@ -90,3 +90,7 @@ Registros -> 89    Fecha -> lunes 17 de junio de 2024 a las 17:11:36
 Registros -> 90    Fecha -> lunes 17 de junio de 2024 a las 17:22:27
 Registros -> 91    Fecha -> lunes 17 de junio de 2024 a las 17:25:23
 Registros -> 92    Fecha -> lunes 17 de junio de 2024 a las 17:26:35
+Registros -> 93    Fecha -> lunes 17 de junio de 2024 a las 17:32:22
+Registros -> 94    Fecha -> lunes 17 de junio de 2024 a las 17:36:02
+Registros -> 95    Fecha -> lunes 17 de junio de 2024 a las 17:40:34
+Registros -> 96    Fecha -> lunes 17 de junio de 2024 a las 17:44:13
