@@ -650,4 +650,22 @@ public class Controlador implements Initializable {
     protected void onArcTan(){
         agregarOperandoComplejoMenosDelante("ArcTan()");
     }
+    @FXML
+    protected void onInvertir(){
+        if(patronCuadradoRaiz.matcher(pantalla.getText()).matches()){
+            pantalla.setText(df.format(Math.pow(Double.parseDouble(pantalla.getText()),-1)));
+        }else if (pantalla.getText().equals("π") || pantalla.getText().equals("-π")) {
+            if(pantalla.getText().equals("-π")){
+                pantalla.setText(df.format(Math.pow(-3.1415, -1)));
+            }else {
+                pantalla.setText(df.format(Math.pow(3.1415, -1)));
+            }
+        }else if (pantalla.getText().equals("e") || pantalla.getText().equals("-e")) {
+            if(pantalla.getText().equals("-e")){
+                pantalla.setText(df.format(Math.pow(-2.7182,-1)));
+            }else {
+                pantalla.setText(df.format(Math.pow(2.7182, -1)));
+            }
+        }
+    }
 }
