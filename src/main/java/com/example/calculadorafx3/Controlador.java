@@ -68,6 +68,9 @@ public class Controlador implements Initializable {
         operandosComplejos.add("sen(");
         operandosComplejos.add("cos(");
         operandosComplejos.add("tan(");
+        operandosComplejos.add("ArcSen(");
+        operandosComplejos.add("ArcCos(");
+        operandosComplejos.add("ArcTan(");
     }
     private String buscarOperadorComplejo(String txt){
         String cadenaOpComplejo = null;
@@ -138,10 +141,12 @@ public class Controlador implements Initializable {
         String operandoSinParentesisFinal = txt.substring(0,indicePrimerParentesis+1);
         if(txt.contains(operando)){
             txt = txt.substring(0,indicePrimerParentesis+1)+"0)";
-        } else if (!txt.contains(operandoSinParentesisFinal+"0)") && txt.contains(".")) {
-            txt = txt.substring(0,indiceUltimoParentesis)+"00)";
-        } else if (!txt.contains(operandoSinParentesisFinal+"0)")) {
-            txt = txt.substring(0,indiceUltimoParentesis)+"00)";
+        } else if (!txt.contains("π") && !txt.substring(indicePrimerParentesis).contains("e")) {
+            if (!txt.contains(operandoSinParentesisFinal+"0)") && txt.contains(".")) {
+                txt = txt.substring(0,indiceUltimoParentesis)+"00)";
+            } else if (!txt.contains(operandoSinParentesisFinal+"0)")) {
+                txt = txt.substring(0,indiceUltimoParentesis)+"00)";
+            }
         }
         if (menosDelante){
             txt = "-"+txt;
@@ -288,6 +293,7 @@ public class Controlador implements Initializable {
         if (opComlejo != null && !txt.endsWith("()") && !txt.endsWith("(-)")){
             boolean menosDelanteOpComplejo = false;
             boolean errorTangente = false;
+            boolean errorArcos = false;
             int indicePrimerParentesis = txt.indexOf("(");
             int indiceUltimoParentesis = txt.indexOf(")");
             double operando;
@@ -311,23 +317,45 @@ public class Controlador implements Initializable {
 
             if(txt.contains("ln(")){
                operando = Math.log(operando);
-            } else if (txt.contains("sen(")) {
-                operando = Math.sin(Math.toRadians(operando));
-            }else if (txt.contains("cos(")) {
-                operando = Math.cos(Math.toRadians(operando));
-            }else if (txt.contains("tan(")) {
-                if(operando % 90 == 0 && operando % 180 != 0){
-                    errorTangente = true;
-                    mostrarAlerta("Chavalíiiin no existe la tangete de un número que sea múltiplo de 90 y no de 180\nTiende a infinito y esas cosas raras");
+            } else if (txt.contains("en(")) {
+                if(txt.contains("Arc")){
+                    if(operando > 1 || operando < -1){
+                        mostrarAlerta("Jefazooo no puedes calcular un arcoseno de un númoer mayor que 1 o menor que menos 1");
+                        errorArcos = true;
+                    }else {
+                        operando = Math.toDegrees(Math.asin(operando));
+                    }
                 }else {
-                    operando = Math.tan(Math.toRadians(operando));
+                    operando = Math.sin(Math.toRadians(operando));
+                }
+            }else if (txt.contains("os(")) {
+                if(txt.contains("Arc")){
+                    if(operando > 1 || operando < -1){
+                        mostrarAlerta("Jefazooo no puedes calcular un arcoseno de un númoer mayor que 1 o menor que menos 1");
+                        errorArcos = true;
+                    }else {
+                        operando = Math.toDegrees(Math.acos(operando));
+                    }
+                }else {
+                    operando = Math.cos(Math.toRadians(operando));
+                }
+            }else if (txt.contains("an(")) {
+                if(txt.contains("Arc")) {
+                    operando = Math.toDegrees(Math.atan(operando));
+                }else {
+                    if(operando % 90 == 0 && operando % 180 != 0){
+                        errorTangente = true;
+                        mostrarAlerta("Chavalíiiin no existe la tangete de un número que sea múltiplo de 90 y no de 180\nTiende a infinito y esas cosas raras");
+                    }else {
+                        operando = Math.tan(Math.toRadians(operando));
+                    }
                 }
             }
 
             if(menosDelante){
                 operando *= -1;
             }
-            if(!errorTangente) {
+            if(!errorTangente && !errorArcos) {
                 pantalla.setText(df.format(operando));
             }
         }else if (txt.endsWith("+") || txt.endsWith("-") || txt.endsWith("/") || txt.endsWith("x") || txt.endsWith("%") || txt.endsWith("^")) {
@@ -426,10 +454,10 @@ public class Controlador implements Initializable {
         String txt = pantalla.getText();
         String opComlejo = buscarOperadorComplejo(txt);
         if(opComlejo != null) {
-            if((!txt.contains("e") || (txt.contains("sen(") && !txt.contains("sen(e)"))) && !txt.contains("π")) {
+            if((!txt.contains("e") || (txt.contains(opComlejo) && !txt.contains(opComlejo+"e)"))) && !txt.contains("π")) {
                 int indiceultimoParentesis = txt.lastIndexOf(")");
                 String cadenaAnterior = txt.substring(0, indiceultimoParentesis);
-                if(txt.contains("(0)")){
+                if(txt.contains("(0)") || txt.contains("(-0)")){
                     pantalla.setText(cadenaAnterior.substring(0,cadenaAnterior.length()-1)+num+")");
                 }else {
                     pantalla.setText(cadenaAnterior + num + ")");
@@ -581,7 +609,7 @@ public class Controlador implements Initializable {
                 contador +=1;
             }
         }
-        if(opComlejo != null || txt.endsWith("0") || txt.contains("∞") || (txt.equals("-0") || txt.equals("-") || txt.isEmpty()) && contador == 0){
+        if( (txt.contains("(-0)") || txt.contains("(0)") || txt.contains("(-)") || (txt.contains("()")) && opComlejo != null) || txt.endsWith("0") || txt.contains("∞") || (txt.equals("-0") || txt.equals("-") || txt.isEmpty()) && contador == 0){
             agregarNumero(String.valueOf(num));
         } else if ((txt.endsWith("0") || txt.endsWith("+") || txt.endsWith("-") || txt.endsWith("/") || txt.endsWith("x") || txt.endsWith("%") || txt.endsWith("^")) && contador <= 1) {
             agregarNumero(String.valueOf(num));
@@ -603,12 +631,23 @@ public class Controlador implements Initializable {
     protected void onTangente(){
         agregarOperandoComplejoMenosDelante("tan()");
     }
-
     private void agregarOperandoComplejoMenosDelante(String op){
         if(pantalla.getText().startsWith("-")){
             pantalla.setText("-"+op);
         }else {
             pantalla.setText(op);
         }
+    }
+    @FXML
+    protected void onArcSeno(){
+        agregarOperandoComplejoMenosDelante("ArcSen()");
+    }
+    @FXML
+    protected void onArcCos(){
+        agregarOperandoComplejoMenosDelante("ArcCos()");
+    }
+    @FXML
+    protected void onArcTan(){
+        agregarOperandoComplejoMenosDelante("ArcTan()");
     }
 }
