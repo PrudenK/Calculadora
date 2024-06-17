@@ -93,7 +93,7 @@
             <Button fx:id="btn6" mnemonicParsing="false" onAction="#onSeno" prefHeight="55.0" prefWidth="50.0" styleClass="botonesCientifica" stylesheets="@calc.css" text="sen" GridPane.columnIndex="1" GridPane.rowIndex="1" />
             <Button fx:id="btn7" mnemonicParsing="false" onAction="#onCoseno" prefHeight="55.0" prefWidth="50.0" styleClass="botonesCientifica" stylesheets="@calc.css" text="cos" GridPane.columnIndex="2" GridPane.rowIndex="1" />
             <Button fx:id="btn8" mnemonicParsing="false" onAction="#onTangente" prefHeight="55.0" prefWidth="50.0" styleClass="botonesCientifica" stylesheets="@calc.css" text="tan" GridPane.columnIndex="3" GridPane.rowIndex="1" />
-            <Button fx:id="btn9" mnemonicParsing="false" prefHeight="55.0" prefWidth="50.0" text="B9" GridPane.rowIndex="2" />
+            <Button fx:id="btn9" mnemonicParsing="false" onAction="#onInt" prefHeight="55.0" prefWidth="50.0" styleClass="botonesCientifica" stylesheets="@calc.css" text="Int" GridPane.rowIndex="2" />
             <Button fx:id="btn10" mnemonicParsing="false" onAction="#onArcSeno" prefHeight="55.0" prefWidth="50.0" styleClass="botonesCientifica" stylesheets="@calc.css" text="arcs" GridPane.columnIndex="1" GridPane.rowIndex="2" />
             <Button fx:id="btn11" mnemonicParsing="false" onAction="#onArcCos" prefHeight="55.0" prefWidth="50.0" styleClass="botonesCientifica" stylesheets="@calc.css" text="arcc" GridPane.columnIndex="2" GridPane.rowIndex="2" />
             <Button fx:id="btn12" mnemonicParsing="false" onAction="#onArcTan" prefHeight="55.0" prefWidth="50.0" styleClass="botonesCientifica" stylesheets="@calc.css" text="arct" GridPane.columnIndex="3" GridPane.rowIndex="2" />

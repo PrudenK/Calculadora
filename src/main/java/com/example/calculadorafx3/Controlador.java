@@ -668,4 +668,11 @@ public class Controlador implements Initializable {
             }
         }
     }
+    @FXML
+    protected void onInt(){
+        if (patronCuadradoRaiz.matcher(pantalla.getText()).matches()){
+            String[] value = pantalla.getText().split("\\.");
+            pantalla.setText(String.valueOf(value[0]));
+        }
+    }
 }
