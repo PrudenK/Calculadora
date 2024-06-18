@@ -25,7 +25,9 @@ public class Controlador implements Initializable {
     private final DecimalFormat df = new DecimalFormat("#.####", new DecimalFormatSymbols(Locale.US));
     private final Pattern patronCuadradoRaiz = Pattern.compile("^-?\\d+\\.?\\d*$");
     private final Pattern patronNumEnteroPositivo = Pattern.compile("^\\d+$");
-    private final Pattern puntoDespuesDelOperador = Pattern.compile("^-?\\d*\\.?\\d*[-+x/%^]\\d+\\..*");
+    private final Pattern puntoDespuesDelOperador = Pattern.compile("^-?\\d*\\.?\\d*[-+x√/%^]\\d+\\.$");
+    private final Pattern patronDespuesOperadorNumsEspeciales = Pattern.compile("^-?(e|π|φ|(\\d*\\.?\\d*))[-+x/%^][φπe]$");
+    private final Pattern patronNumsAntesRaiz = Pattern.compile("^-?(e|π|φ|(\\d*\\.?\\d*))$");
     @FXML protected GridPane cientifica;
     @FXML
     private Label pantalla;
@@ -86,7 +88,7 @@ public class Controlador implements Initializable {
     @FXML
     protected void onButton00() {
         String txt = pantalla.getText();
-        Pattern pattern = Pattern.compile("^-?\\d*\\.?\\d*[-+x/%^]\\d*\\.?\\d*.*");
+        Pattern pattern = Pattern.compile("^-?\\d*\\.?\\d*[-+x/√%^]\\d*\\.?\\d*$");
         String operandoComplejo = buscarOperadorComplejo(txt);
         if(operandoComplejo != null){
             operandosComplejos00(operandoComplejo+")");
@@ -94,7 +96,7 @@ public class Controlador implements Initializable {
             pantalla.setText("0");
         }else {
             if(!txt.equals("-0") && !txt.equals("0") && !txt.endsWith("π") && !txt.endsWith("e") && !txt.endsWith("φ")) {
-                if ((pattern.matcher(pantalla.getText()).matches() && pantalla.getText().endsWith("0")) || txt.contains("π") || txt.contains("e") || txt.startsWith("φ")) {
+                if ((pattern.matcher(pantalla.getText()).matches() && pantalla.getText().endsWith("0")) || txt.contains("√") || txt.contains("π") || txt.contains("e") || txt.startsWith("φ")) {
                     if (txt.startsWith("-")) {
                         txt = txt.substring(1);
                     }
@@ -105,7 +107,9 @@ public class Controlador implements Initializable {
                             break;
                         }
                     }
-                    if ((puntoDespuesDelOperador.matcher(txt).matches() || !txt.matches("^-?(e|π|φ|(\\d*\\.?\\d*))[-+x/%^]0.*"))
+                    if(txt.endsWith("√") || txt.endsWith("√-")){
+                        pantalla.setText(pantalla.getText()+"0");
+                    }else if ((puntoDespuesDelOperador.matcher(txt).matches() || !txt.matches("^-?(e|π|φ|(\\d*\\.?\\d*))[-+√x/%^]0$"))
                             && !txt.startsWith("π") && !txt.startsWith("e") && !txt.startsWith("φ")) {
                         pantalla.setText(pantalla.getText() + "00");
                     } else if ((pantalla.getText().contains(".") || contieneNumero) && (txt.contains("π") || txt.contains("e") || txt.startsWith("φ"))) {
@@ -235,6 +239,13 @@ public class Controlador implements Initializable {
             }else {
                 pantalla.setText(txt.substring(0, indicePrimerParentesis + 1) + "-" + txt.substring(indicePrimerParentesis + 1, indiceUltimoParentesis + 1));
             }
+        } else if (txt.contains("√")) {
+            int indiceRaiz = txt.indexOf("√");
+            if(txt.contains("√-")){
+                pantalla.setText(txt.substring(0,indiceRaiz+1)+txt.substring(indiceRaiz+2));
+            }else {
+                pantalla.setText(txt.substring(0,indiceRaiz+1)+"-"+txt.substring(indiceRaiz+1));
+            }
         }
     }
     @FXML
@@ -276,12 +287,39 @@ public class Controlador implements Initializable {
             }
         }else {
             if(!pantalla.getText().contains(".") && !pantalla.getText().contains(opComlejo+")") && !pantalla.getText().contains(opComlejo+"e)")
-                    && !pantalla.getText().contains(opComlejo+"π)") && !pantalla.getText().contains(opComlejo+"φ)")){
+                    && !pantalla.getText().contains(opComlejo+"π)") && !pantalla.getText().contains(opComlejo+"φ)") && !pantalla.getText().contains(opComlejo+"-e)")
+                    && !pantalla.getText().contains(opComlejo+"-π)") && !pantalla.getText().contains(opComlejo+"-φ)")){
                 int indiceultimoParentesis = pantalla.getText().lastIndexOf(")");
                 String cadenaAnterior = pantalla.getText().substring(0, indiceultimoParentesis);
                 pantalla.setText(cadenaAnterior + ".)");
             }
         }
+    }
+    private double devolverValor(String letra){
+        double operando = 0;
+        if (letra.equals("e")) {
+            operando = 2.7182;
+        } else if (letra.equals("π")) {
+            operando = 3.1415;
+        } else if (letra.equals("φ")) {
+            operando = 1.618;
+        }
+        return operando;
+    }
+    private boolean contieneLetraExpresion (String cadena){
+       return cadena.contains("e") || cadena.contains("π") || cadena.contains("φ");
+    }
+    private double operandos(String op, boolean menos){
+        double opDouble;
+        if(contieneLetraExpresion(op)){
+            opDouble = devolverValor(op);
+        }else {
+            opDouble = Double.parseDouble(op);
+        }
+        if(menos){
+            opDouble *= -1;
+        }
+        return opDouble;
     }
     @FXML
     protected void onButtonIgual() {
@@ -293,7 +331,28 @@ public class Controlador implements Initializable {
                 menosDelante = true;
             }
             String opComlejo = buscarOperadorComplejo(pantalla.getText());
-            if (opComlejo != null && !txt.endsWith("()") && !txt.endsWith("(-)")) {
+            if(txt.contains("√")){
+                boolean menosDentroRaiz = false;
+                int indiceRaiz = txt.indexOf("√");
+                if(txt.contains("-")){
+                    txt = txt.substring(0,indiceRaiz+1) + txt.substring(indiceRaiz+2);
+                    menosDentroRaiz = true;
+                }
+                String operando1String = txt.split("√")[0];
+                String operando2String = txt.split("√")[1];
+                double operando1, operando2;
+                operando1 = operandos(operando1String, menosDelante);
+                operando2 = operandos(operando2String, false);
+                if(operando1 % 2 == 0 && menosDentroRaiz){
+                    mostrarAlerta("No puedes hacer una raíz de indice par con radicando negativo");
+                }else {
+                    double resultado = Math.pow(operando2, 1.0 / operando1);
+                    if(menosDentroRaiz){
+                        resultado *= -1;
+                    }
+                    pantalla.setText(df.format(resultado));
+                }
+            } else if (opComlejo != null && !txt.endsWith("()") && !txt.endsWith("(-)")) {
                 boolean menosDelanteOpComplejo = false;
                 boolean errorTangente = false;
                 boolean errorArcos = false;
@@ -306,20 +365,7 @@ public class Controlador implements Initializable {
                     menosDelanteOpComplejo = true;
                     operandoString = operandoString.substring(1);
                 }
-                if (operandoString.equals("e")) {
-                    operando = 2.7182;
-                } else if (operandoString.equals("π")) {
-                    operando = 3.1415;
-                } else if (operandoString.equals("φ")) {
-                    operando = 1.618;
-                } else {
-                    operando = Double.parseDouble(operandoString);
-                }
-
-                if (menosDelanteOpComplejo) {
-                    operando *= -1;
-                }
-
+                operando = operandos(operandoString,menosDelanteOpComplejo);
 
                 if (txt.contains("ln(")) {
                     if (Double.parseDouble(String.valueOf(operando)) == 0.0) {
@@ -379,62 +425,13 @@ public class Controlador implements Initializable {
             } else if (txt.endsWith("+") || txt.endsWith("-") || txt.endsWith("/") || txt.endsWith("x") || txt.endsWith("%") || txt.endsWith("^")) {
                 mostrarAlerta("Introduce el segundo número");
             } else {
-                if (txt.equals("π")) {
-                    if (menosDelante) {
-                        pantalla.setText("-3.1415");
-                    } else {
-                        pantalla.setText("3.1415");
-                    }
+                if (txt.equals("π") || txt.equals("φ") || txt.equals("e")) {
+                    pantalla.setText(String.valueOf(operandos(txt,menosDelante)));
                 }
-                // todo factorizable quizas
-                if (txt.equals("e")) {
-                    if (menosDelante) {
-                        pantalla.setText("-2.7182");
-                    } else {
-                        pantalla.setText("2.7182");
-                    }
-                }
-
-                if (txt.equals("φ")) {
-                    if (menosDelante) {
-                        pantalla.setText("-1.618");
-                    } else {
-                        pantalla.setText("1.618");
-                    }
-                }
-
-
                 if ((txt.contains("+") || txt.contains("/") || txt.contains("%") || txt.contains("x") || txt.contains("-") || txt.contains("^")) && opComlejo == null) {
-                    double operando1;
                     int indiceOperadorInt = indiceOperador(txt);
-
-                    if (txt.substring(0, indiceOperadorInt).equals("π")) {
-                        operando1 = 3.1415;
-                    } else if (txt.substring(0, indiceOperadorInt).equals("e")) {
-                        operando1 = 2.7182;
-                    } else if (txt.substring(0, indiceOperadorInt).equals("φ")) {
-                        operando1 = 1.618;
-                    } else {
-                        operando1 = Double.parseDouble(txt.substring(0, indiceOperadorInt));
-                    }
-
-
-                    if (menosDelante) {
-                        operando1 *= -1;
-                    }
-
-
-                    double operando2;
-                    if (txt.substring(indiceOperadorInt + 1).equals("π")) {
-                        operando2 = 3.1415;
-                    } else if (txt.substring(indiceOperadorInt + 1).equals("e")) {
-                        operando2 = 2.7182;
-                    } else if (txt.substring(indiceOperadorInt + 1).equals("φ")) {
-                        operando2 = 1.618;
-                    } else {
-                        operando2 = Double.parseDouble(txt.substring(indiceOperadorInt + 1));
-                    }
-
+                    double operando1 = operandos(txt.substring(0, indiceOperadorInt),menosDelante);
+                    double operando2 = operandos(txt.substring(indiceOperadorInt + 1),false);
                     double resultado = 0;
                     if (txt.contains("+")) {
                         resultado = operando1 + operando2;
@@ -486,7 +483,8 @@ public class Controlador implements Initializable {
         String txt = pantalla.getText();
         String opComlejo = buscarOperadorComplejo(txt);
         if(opComlejo != null) {
-            if((!txt.contains("e") || (txt.contains(opComlejo) && !txt.contains(opComlejo+"e)"))) && !txt.contains("π") && !txt.contains("φ")) {
+            if((!txt.contains("-e") || !txt.contains("e") || (txt.contains(opComlejo) && !txt.contains(opComlejo+"e)") && !txt.contains(opComlejo+"-e)")))
+                    && !txt.contains("π") && !txt.contains("φ") && !txt.contains("-π") && !txt.contains("-φ")) {
                 int indiceultimoParentesis = txt.lastIndexOf(")");
                 String cadenaAnterior = txt.substring(0, indiceultimoParentesis);
                 if(txt.contains("(0)") || txt.contains("(-0)")){
@@ -498,11 +496,11 @@ public class Controlador implements Initializable {
         }else if(txt.contains("∞")){
             pantalla.setText(num);
         }else {
-            Pattern pattern = Pattern.compile("^-?\\d*\\.?\\d*[-+x/%^]0$");
-            Pattern patterPi = Pattern.compile("^-?[φπe][-+x/%^]0$");
-            Pattern patronDespuesOperadorNumsEspeciales = Pattern.compile("^-?(e|π|φ|(\\d*\\.?\\d*))[-+x/%^][φπe].*");
+            Pattern pattern = Pattern.compile("^-?\\d*\\.?\\d*[-+x/%^√]-?0$");
+            Pattern patterPi = Pattern.compile("^-?[φπe][-+x/%^√]-?0$");
             Pattern pi = Pattern.compile("^-?[φπe]$");
-            if (!pi.matcher(pantalla.getText()).matches() && !patronDespuesOperadorNumsEspeciales.matcher(txt).matches() &&
+            Pattern piRaiz = Pattern.compile("^-?(e|π|φ|(\\d*\\.?\\d*))√-?[φπe]$");
+            if (!pi.matcher(pantalla.getText()).matches() && !patronDespuesOperadorNumsEspeciales.matcher(txt).matches() && !piRaiz.matcher(txt).matches() &&
                     (!pantalla.getText().endsWith("π") || !pantalla.getText().endsWith("e") || !pantalla.getText().endsWith("φ"))) {
                 if (pantalla.getText().equals("0")) {
                     pantalla.setText(num);
@@ -648,7 +646,7 @@ public class Controlador implements Initializable {
             }
         }
         if( (txt.contains("(-0)") || txt.contains("(0)") || txt.contains("(-)") || (txt.contains("()")) && opComlejo != null)
-                || txt.endsWith("0") || txt.contains("∞") || (txt.equals("-0") || txt.equals("-") || txt.isEmpty()) && contador == 0){
+                || txt.endsWith("0") || txt.endsWith("√") || txt.contains("∞") || (txt.equals("-0") || txt.equals("-") || txt.isEmpty()) && contador == 0){
             agregarNumero(String.valueOf(num));
         } else if ((txt.endsWith("0") || txt.endsWith("+") || txt.endsWith("-") || txt.endsWith("/") || txt.endsWith("x") || txt.endsWith("%") || txt.endsWith("^")) && contador <= 1) {
             agregarNumero(String.valueOf(num));
@@ -727,5 +725,12 @@ public class Controlador implements Initializable {
     @FXML
     protected void onNumOro(){
         expresionesMatematicas('φ');
+    }
+    @FXML
+    protected void onRaizX(){
+        String txt = pantalla.getText();
+        if(patronNumsAntesRaiz.matcher(txt).matches() && !txt.isEmpty()){
+            pantalla.setText(txt+"√");
+        }
     }
 }
