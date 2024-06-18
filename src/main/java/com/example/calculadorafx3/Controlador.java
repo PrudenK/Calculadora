@@ -93,8 +93,8 @@ public class Controlador implements Initializable {
         }else if(txt.contains("∞")){
             pantalla.setText("0");
         }else {
-            if(!txt.equals("-0") && !txt.equals("0") && !txt.endsWith("π") && !txt.endsWith("e") ) {
-                if ((pattern.matcher(pantalla.getText()).matches() && pantalla.getText().endsWith("0")) || txt.contains("π") || txt.contains("e")) {
+            if(!txt.equals("-0") && !txt.equals("0") && !txt.endsWith("π") && !txt.endsWith("e") && !txt.endsWith("φ")) {
+                if ((pattern.matcher(pantalla.getText()).matches() && pantalla.getText().endsWith("0")) || txt.contains("π") || txt.contains("e") || txt.startsWith("φ")) {
                     if (txt.startsWith("-")) {
                         txt = txt.substring(1);
                     }
@@ -105,9 +105,10 @@ public class Controlador implements Initializable {
                             break;
                         }
                     }
-                    if ((puntoDespuesDelOperador.matcher(txt).matches() || !txt.matches("^-?(e|π|(\\d*\\.?\\d*))[-+x/%^]0.*")) && !txt.startsWith("π") && !txt.startsWith("e")) {
+                    if ((puntoDespuesDelOperador.matcher(txt).matches() || !txt.matches("^-?(e|π|φ|(\\d*\\.?\\d*))[-+x/%^]0.*"))
+                            && !txt.startsWith("π") && !txt.startsWith("e") && !txt.startsWith("φ")) {
                         pantalla.setText(pantalla.getText() + "00");
-                    } else if ((pantalla.getText().contains(".") || contieneNumero) && (txt.contains("π") || txt.contains("e"))) {
+                    } else if ((pantalla.getText().contains(".") || contieneNumero) && (txt.contains("π") || txt.contains("e") || txt.startsWith("φ"))) {
                         pantalla.setText(pantalla.getText() + "00");
                     }else if (!pantalla.getText().endsWith("0")){
                         pantalla.setText(pantalla.getText() + "0");
@@ -142,7 +143,7 @@ public class Controlador implements Initializable {
         String operandoSinParentesisFinal = txt.substring(0,indicePrimerParentesis+1);
         if(txt.contains(operando)){
             txt = txt.substring(0,indicePrimerParentesis+1)+"0)";
-        } else if (!txt.contains("π") && !txt.substring(indicePrimerParentesis).contains("e")) {
+        } else if (!txt.contains("π") && !txt.substring(indicePrimerParentesis).contains("e") && !txt.contains("φ")) {
             if (!txt.contains(operandoSinParentesisFinal+"0)") && txt.contains(".")) {
                 txt = txt.substring(0,indiceUltimoParentesis)+"00)";
             } else if (!txt.contains(operandoSinParentesisFinal+"0)")) {
@@ -262,7 +263,7 @@ public class Controlador implements Initializable {
         String opComlejo = buscarOperadorComplejo(txt);
         if (opComlejo == null) {
             if (!txt.isEmpty() && !txt.equals("-") && !caracteresExcluidos.contains(txt.charAt(txt.length() - 1))
-                    && !txt.endsWith("π") && !txt.endsWith("e")) {
+                    && !txt.endsWith("π") && !txt.endsWith("e")  && !txt.endsWith("φ")) {
                 // Verifica si el último número ya tiene un punto
                 String[] numeros = txt.split("[+\\-x/^√%]"); //operadores permitidos para poner un punto después
                 if (numeros.length > 0) {
@@ -275,7 +276,7 @@ public class Controlador implements Initializable {
             }
         }else {
             if(!pantalla.getText().contains(".") && !pantalla.getText().contains(opComlejo+")") && !pantalla.getText().contains(opComlejo+"e)")
-                    && !pantalla.getText().contains(opComlejo+"π)")){
+                    && !pantalla.getText().contains(opComlejo+"π)") && !pantalla.getText().contains(opComlejo+"φ)")){
                 int indiceultimoParentesis = pantalla.getText().lastIndexOf(")");
                 String cadenaAnterior = pantalla.getText().substring(0, indiceultimoParentesis);
                 pantalla.setText(cadenaAnterior + ".)");
@@ -285,162 +286,179 @@ public class Controlador implements Initializable {
     @FXML
     protected void onButtonIgual() {
         String txt = pantalla.getText();
-        boolean menosDelante = false;
-        if(txt.charAt(0) == '-'){
-            txt = txt.substring(1);
-            menosDelante = true;
-        }
-        String opComlejo = buscarOperadorComplejo(pantalla.getText());
-        if (opComlejo != null && !txt.endsWith("()") && !txt.endsWith("(-)")){
-            boolean menosDelanteOpComplejo = false;
-            boolean errorTangente = false;
-            boolean errorArcos = false;
-            boolean errorLogaritmo = false;
-            int indicePrimerParentesis = txt.indexOf("(");
-            int indiceUltimoParentesis = txt.indexOf(")");
-            double operando;
-            String operandoString = txt.substring(indicePrimerParentesis+1,indiceUltimoParentesis);
-            if(operandoString.contains("-")){
-                menosDelanteOpComplejo = true;
-                operandoString = operandoString.substring(1);
+        if(!txt.isEmpty()) {
+            boolean menosDelante = false;
+            if (txt.charAt(0) == '-') {
+                txt = txt.substring(1);
+                menosDelante = true;
             }
-            if(operandoString.equals("e")){
-                operando = 2.7182;
-            } else if (operandoString.equals("π")) {
-                operando = 3.1415;
-            }else {
-                operando = Double.parseDouble(operandoString);
-            }
-
-            if(menosDelanteOpComplejo){
-                operando *= -1;
-            }
-
-
-            if(txt.contains("ln(")){
-               if(Double.parseDouble(String.valueOf(operando)) == 0.0) {
-                   mostrarAlerta("Fieraaa que no puedes hacer un logarítmo neperiano de 0");
-                   errorLogaritmo = true;
-               }else {
-                   operando = Math.log(operando);
-               }
-            } else if (txt.contains("en(")) {
-                if(txt.contains("Arc")){
-                    if(operando > 1 || operando < -1){
-                        mostrarAlerta("Jefazooo no puedes calcular un arcoseno de un númoer mayor que 1 o menor que menos 1");
-                        errorArcos = true;
-                    }else {
-                        operando = Math.toDegrees(Math.asin(operando));
-                    }
-                }else {
-                    operando = Math.sin(Math.toRadians(operando));
+            String opComlejo = buscarOperadorComplejo(pantalla.getText());
+            if (opComlejo != null && !txt.endsWith("()") && !txt.endsWith("(-)")) {
+                boolean menosDelanteOpComplejo = false;
+                boolean errorTangente = false;
+                boolean errorArcos = false;
+                boolean errorLogaritmo = false;
+                int indicePrimerParentesis = txt.indexOf("(");
+                int indiceUltimoParentesis = txt.indexOf(")");
+                double operando;
+                String operandoString = txt.substring(indicePrimerParentesis + 1, indiceUltimoParentesis);
+                if (operandoString.contains("-")) {
+                    menosDelanteOpComplejo = true;
+                    operandoString = operandoString.substring(1);
                 }
-            }else if (txt.contains("os(")) {
-                if(txt.contains("Arc")){
-                    if(operando > 1 || operando < -1){
-                        mostrarAlerta("Jefazooo no puedes calcular un arcoseno de un númoer mayor que 1 o menor que menos 1");
-                        errorArcos = true;
-                    }else {
-                        operando = Math.toDegrees(Math.acos(operando));
-                    }
-                }else {
-                    operando = Math.cos(Math.toRadians(operando));
-                }
-            }else if (txt.contains("an(")) {
-                if(txt.contains("Arc")) {
-                    operando = Math.toDegrees(Math.atan(operando));
-                }else {
-                    if(operando % 90 == 0 && operando % 180 != 0){
-                        errorTangente = true;
-                        mostrarAlerta("Chavalíiiin no existe la tangete de un número que sea múltiplo de 90 y no de 180\nTiende a infinito y esas cosas raras");
-                    }else {
-                        operando = Math.tan(Math.toRadians(operando));
-                    }
-                }
-            } else if (txt.contains("log10(")) {
-                if(Double.parseDouble(String.valueOf(operando)) == 0.0) {
-                    mostrarAlerta("Fieraaa que no puedes hacer un logarítmo de 0");
-                    errorLogaritmo = true;
-                }else {
-                    operando = Math.log10(operando);
-                }
-            }
-
-            if(menosDelante){
-                operando *= -1;
-            }
-            if(!errorTangente && !errorArcos && !errorLogaritmo) {
-                pantalla.setText(df.format(operando));
-            }
-        }else if (txt.endsWith("+") || txt.endsWith("-") || txt.endsWith("/") || txt.endsWith("x") || txt.endsWith("%") || txt.endsWith("^")) {
-            mostrarAlerta("Introduce el segundo número");
-        }else {
-            if (txt.equals("π")) {
-                if (menosDelante) {
-                    pantalla.setText("-3.1415");
+                if (operandoString.equals("e")) {
+                    operando = 2.7182;
+                } else if (operandoString.equals("π")) {
+                    operando = 3.1415;
+                } else if (operandoString.equals("φ")) {
+                    operando = 1.618;
                 } else {
-                    pantalla.setText("3.1415");
+                    operando = Double.parseDouble(operandoString);
                 }
-            }
-            // todo factorizable quizas
-            if (txt.equals("e")) {
-                if (menosDelante) {
-                    pantalla.setText("-2.7182");
-                } else {
-                    pantalla.setText("2.7182");
-                }
-            }
 
-            if ((txt.contains("+") || txt.contains("/") || txt.contains("%") || txt.contains("x") || txt.contains("-") || txt.contains("^")) && opComlejo == null) {
-                double operando1;
-                int indiceOperadorInt = indiceOperador(txt);
-
-                if(txt.substring(0, indiceOperadorInt).equals("π")){
-                    operando1 = 3.1415;
-                } else if (txt.substring(0, indiceOperadorInt).equals("e")) {
-                    operando1 = 2.7182;
-                } else {
-                    operando1 = Double.parseDouble(txt.substring(0, indiceOperadorInt));
+                if (menosDelanteOpComplejo) {
+                    operando *= -1;
                 }
 
 
-                if (menosDelante) {
-                    operando1 *= -1;
-                }
-
-
-                double operando2;
-                if(txt.substring(indiceOperadorInt + 1).equals("π")){
-                    operando2 = 3.1415;
-                } else if (txt.substring(indiceOperadorInt + 1).equals("e")) {
-                    operando2 = 2.7182;
-                } else {
-                    operando2 = Double.parseDouble(txt.substring(indiceOperadorInt + 1));
-                }
-
-                double resultado = 0;
-                if (txt.contains("+")) {
-                    resultado = operando1 + operando2;
-                } else if (txt.contains("x")) {
-                    resultado = operando1 * operando2;
-                } else if (txt.contains("-")) {
-                    resultado = operando1 - operando2;
-                } else if (txt.contains("%")) {
-                    if (operando2 == 0.0) {
-                        mostrarAlerta("No puedes hacer n % 0 maquinón");
+                if (txt.contains("ln(")) {
+                    if (Double.parseDouble(String.valueOf(operando)) == 0.0) {
+                        mostrarAlerta("Fieraaa que no puedes hacer un logarítmo neperiano de 0");
+                        errorLogaritmo = true;
                     } else {
-                        resultado = operando1 % operando2;
+                        operando = Math.log(operando);
                     }
-                } else if (txt.contains("/")) {
-                    if (operando2 == 0.0) {
-                        mostrarAlerta("No puedes divir por 0 máquina");
+                } else if (txt.contains("en(")) {
+                    if (txt.contains("Arc")) {
+                        if (operando > 1 || operando < -1) {
+                            mostrarAlerta("Jefazooo no puedes calcular un arcoseno de un númoer mayor que 1 o menor que menos 1");
+                            errorArcos = true;
+                        } else {
+                            operando = Math.toDegrees(Math.asin(operando));
+                        }
                     } else {
-                        resultado = operando1 / operando2;
+                        operando = Math.sin(Math.toRadians(operando));
                     }
-                } else if (txt.contains("^")) {
-                    resultado = Math.pow(operando1, operando2);
+                } else if (txt.contains("os(")) {
+                    if (txt.contains("Arc")) {
+                        if (operando > 1 || operando < -1) {
+                            mostrarAlerta("Jefazooo no puedes calcular un arcoseno de un númoer mayor que 1 o menor que menos 1");
+                            errorArcos = true;
+                        } else {
+                            operando = Math.toDegrees(Math.acos(operando));
+                        }
+                    } else {
+                        operando = Math.cos(Math.toRadians(operando));
+                    }
+                } else if (txt.contains("an(")) {
+                    if (txt.contains("Arc")) {
+                        operando = Math.toDegrees(Math.atan(operando));
+                    } else {
+                        if (operando % 90 == 0 && operando % 180 != 0) {
+                            errorTangente = true;
+                            mostrarAlerta("Chavalíiiin no existe la tangete de un número que sea múltiplo de 90 y no de 180\nTiende a infinito y esas cosas raras");
+                        } else {
+                            operando = Math.tan(Math.toRadians(operando));
+                        }
+                    }
+                } else if (txt.contains("log10(")) {
+                    if (Double.parseDouble(String.valueOf(operando)) == 0.0) {
+                        mostrarAlerta("Fieraaa que no puedes hacer un logarítmo de 0");
+                        errorLogaritmo = true;
+                    } else {
+                        operando = Math.log10(operando);
+                    }
                 }
-                pantalla.setText(df.format(resultado));
+
+                if (menosDelante) {
+                    operando *= -1;
+                }
+                if (!errorTangente && !errorArcos && !errorLogaritmo) {
+                    pantalla.setText(df.format(operando));
+                }
+            } else if (txt.endsWith("+") || txt.endsWith("-") || txt.endsWith("/") || txt.endsWith("x") || txt.endsWith("%") || txt.endsWith("^")) {
+                mostrarAlerta("Introduce el segundo número");
+            } else {
+                if (txt.equals("π")) {
+                    if (menosDelante) {
+                        pantalla.setText("-3.1415");
+                    } else {
+                        pantalla.setText("3.1415");
+                    }
+                }
+                // todo factorizable quizas
+                if (txt.equals("e")) {
+                    if (menosDelante) {
+                        pantalla.setText("-2.7182");
+                    } else {
+                        pantalla.setText("2.7182");
+                    }
+                }
+
+                if (txt.equals("φ")) {
+                    if (menosDelante) {
+                        pantalla.setText("-1.618");
+                    } else {
+                        pantalla.setText("1.618");
+                    }
+                }
+
+
+                if ((txt.contains("+") || txt.contains("/") || txt.contains("%") || txt.contains("x") || txt.contains("-") || txt.contains("^")) && opComlejo == null) {
+                    double operando1;
+                    int indiceOperadorInt = indiceOperador(txt);
+
+                    if (txt.substring(0, indiceOperadorInt).equals("π")) {
+                        operando1 = 3.1415;
+                    } else if (txt.substring(0, indiceOperadorInt).equals("e")) {
+                        operando1 = 2.7182;
+                    } else if (txt.substring(0, indiceOperadorInt).equals("φ")) {
+                        operando1 = 1.618;
+                    } else {
+                        operando1 = Double.parseDouble(txt.substring(0, indiceOperadorInt));
+                    }
+
+
+                    if (menosDelante) {
+                        operando1 *= -1;
+                    }
+
+
+                    double operando2;
+                    if (txt.substring(indiceOperadorInt + 1).equals("π")) {
+                        operando2 = 3.1415;
+                    } else if (txt.substring(indiceOperadorInt + 1).equals("e")) {
+                        operando2 = 2.7182;
+                    } else if (txt.substring(indiceOperadorInt + 1).equals("φ")) {
+                        operando2 = 1.618;
+                    } else {
+                        operando2 = Double.parseDouble(txt.substring(indiceOperadorInt + 1));
+                    }
+
+                    double resultado = 0;
+                    if (txt.contains("+")) {
+                        resultado = operando1 + operando2;
+                    } else if (txt.contains("x")) {
+                        resultado = operando1 * operando2;
+                    } else if (txt.contains("-")) {
+                        resultado = operando1 - operando2;
+                    } else if (txt.contains("%")) {
+                        if (operando2 == 0.0) {
+                            mostrarAlerta("No puedes hacer n % 0 maquinón");
+                        } else {
+                            resultado = operando1 % operando2;
+                        }
+                    } else if (txt.contains("/")) {
+                        if (operando2 == 0.0) {
+                            mostrarAlerta("No puedes divir por 0 máquina");
+                        } else {
+                            resultado = operando1 / operando2;
+                        }
+                    } else if (txt.contains("^")) {
+                        resultado = Math.pow(operando1, operando2);
+                    }
+                    pantalla.setText(df.format(resultado));
+                }
             }
         }
     }
@@ -468,7 +486,7 @@ public class Controlador implements Initializable {
         String txt = pantalla.getText();
         String opComlejo = buscarOperadorComplejo(txt);
         if(opComlejo != null) {
-            if((!txt.contains("e") || (txt.contains(opComlejo) && !txt.contains(opComlejo+"e)"))) && !txt.contains("π")) {
+            if((!txt.contains("e") || (txt.contains(opComlejo) && !txt.contains(opComlejo+"e)"))) && !txt.contains("π") && !txt.contains("φ")) {
                 int indiceultimoParentesis = txt.lastIndexOf(")");
                 String cadenaAnterior = txt.substring(0, indiceultimoParentesis);
                 if(txt.contains("(0)") || txt.contains("(-0)")){
@@ -481,9 +499,11 @@ public class Controlador implements Initializable {
             pantalla.setText(num);
         }else {
             Pattern pattern = Pattern.compile("^-?\\d*\\.?\\d*[-+x/%^]0$");
-            Pattern patterPi = Pattern.compile("^-?[πe][-+x/%^]0$");
-            Pattern pi = Pattern.compile("^-?[πe]$");
-            if (!pi.matcher(pantalla.getText()).matches() && (!pantalla.getText().endsWith("π") || !pantalla.getText().endsWith("e"))) {
+            Pattern patterPi = Pattern.compile("^-?[φπe][-+x/%^]0$");
+            Pattern patronDespuesOperadorNumsEspeciales = Pattern.compile("^-?(e|π|φ|(\\d*\\.?\\d*))[-+x/%^][φπe].*");
+            Pattern pi = Pattern.compile("^-?[φπe]$");
+            if (!pi.matcher(pantalla.getText()).matches() && !patronDespuesOperadorNumsEspeciales.matcher(txt).matches() &&
+                    (!pantalla.getText().endsWith("π") || !pantalla.getText().endsWith("e") || !pantalla.getText().endsWith("φ"))) {
                 if (pantalla.getText().equals("0")) {
                     pantalla.setText(num);
                 } else if (pantalla.getText().equals("-0")) {
@@ -535,6 +555,8 @@ public class Controlador implements Initializable {
             pantalla.setText(df.format(Math.pow(3.1415,2)));
         }else if (pantalla.getText().equals("e") || pantalla.getText().equals("-e")) {
             pantalla.setText(df.format(Math.pow(2.7182,2)));
+        }else if (pantalla.getText().equals("φ") || pantalla.getText().equals("-φ")) {
+            pantalla.setText(df.format(Math.pow(1.618,2)));
         }
     }
     @FXML
@@ -549,6 +571,8 @@ public class Controlador implements Initializable {
             pantalla.setText(df.format(Math.sqrt(3.1415)));
         }else if (pantalla.getText().equals("e")) {
             pantalla.setText(df.format(Math.sqrt(2.7182)));
+        }else if (pantalla.getText().equals("φ")) {
+            pantalla.setText(df.format(Math.sqrt(1.618)));
         }
     }
     @FXML
@@ -570,7 +594,7 @@ public class Controlador implements Initializable {
     @FXML
     protected void onCientifica(){
         ajustarStage(true);
-        pantalla.setPrefWidth(454);
+        pantalla.setPrefWidth(410);
     }
     @FXML
     protected void onBasica(){
@@ -581,7 +605,7 @@ public class Controlador implements Initializable {
         Stage stage = (Stage) cientifica.getScene().getWindow();
         if (expand) {
             cientifica.setVisible(true);
-            stage.setWidth(483);
+            stage.setWidth(437);
         } else {
             cientifica.setVisible(false);
             stage.setWidth(276);
@@ -646,13 +670,6 @@ public class Controlador implements Initializable {
     protected void onTangente(){
         agregarOperandoComplejoMenosDelante("tan()");
     }
-    private void agregarOperandoComplejoMenosDelante(String op){
-        if(pantalla.getText().startsWith("-")){
-            pantalla.setText("-"+op);
-        }else {
-            pantalla.setText(op);
-        }
-    }
     @FXML
     protected void onArcSeno(){
         agregarOperandoComplejoMenosDelante("ArcSen()");
@@ -668,6 +685,13 @@ public class Controlador implements Initializable {
     @FXML
     protected void onLog10(){
         agregarOperandoComplejoMenosDelante("log10()");
+    }
+    private void agregarOperandoComplejoMenosDelante(String op){
+        if(pantalla.getText().startsWith("-")){
+            pantalla.setText("-"+op);
+        }else {
+            pantalla.setText(op);
+        }
     }
     @FXML
     protected void onInvertir(){
@@ -685,6 +709,12 @@ public class Controlador implements Initializable {
             }else {
                 pantalla.setText(df.format(Math.pow(2.7182, -1)));
             }
+        }else if (pantalla.getText().equals("φ") || pantalla.getText().equals("-φ")) {
+            if(pantalla.getText().equals("-φ")){
+                pantalla.setText(df.format(Math.pow(-1.618,-1)));
+            }else {
+                pantalla.setText(df.format(Math.pow(1.618, -1)));
+            }
         }
     }
     @FXML
@@ -694,5 +724,8 @@ public class Controlador implements Initializable {
             pantalla.setText(String.valueOf(value[0]));
         }
     }
-
+    @FXML
+    protected void onNumOro(){
+        expresionesMatematicas('φ');
+    }
 }

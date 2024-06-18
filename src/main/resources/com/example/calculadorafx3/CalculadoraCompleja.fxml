@@ -12,7 +12,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.text.Font?>
 
-<Pane onMouseDragged="#arrastrarRaton" onMousePressed="#presionarRaton" prefHeight="403.0" prefWidth="483.0" style="-fx-background-color: black; -fx-border-color: white;" stylesheets="@calc.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.calculadorafx3.Controlador">
+<Pane onMouseDragged="#arrastrarRaton" onMousePressed="#presionarRaton" prefHeight="403.0" prefWidth="437.0" style="-fx-background-color: black; -fx-border-color: white;" stylesheets="@calc.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.calculadorafx3.Controlador">
     <padding>
         <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
     </padding>
@@ -70,9 +70,8 @@
         </children>
     </GridPane>
 
-    <GridPane fx:id="cientifica" hgap="5" layoutX="269.0" layoutY="130.0" prefHeight="243.0" prefWidth="200.0" translateY="10.0" vgap="5" visible="true">
+    <GridPane fx:id="cientifica" hgap="5" layoutX="269.0" layoutY="130.0" prefHeight="243.0" prefWidth="152.0" translateY="10.0" vgap="5" visible="true">
         <columnConstraints>
-            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="50.0" />
             <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="50.0" />
             <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="50.0" />
             <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="50.0" />
@@ -85,26 +84,21 @@
             <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
         </rowConstraints>
         <children>
-            <Button fx:id="idFactorial" mnemonicParsing="false" onAction="#onFactorial" prefHeight="55.0" prefWidth="50.0" styleClass="botonesCientifica" stylesheets="@calc.css" text="!" />
-            <Button fx:id="btn2" mnemonicParsing="false" onAction="#onNeperiano" prefHeight="55.0" prefWidth="50.0" styleClass="botonesCientifica" stylesheets="@calc.css" text="ln()" GridPane.columnIndex="1" />
-            <Button fx:id="btn3" mnemonicParsing="false" onAction="#onLog10" prefHeight="55.0" prefWidth="50.0" styleClass="botonesCientifica" stylesheets="@calc.css" text="lg10" GridPane.columnIndex="2" />
-            <Button fx:id="btn4" mnemonicParsing="false" prefHeight="55.0" prefWidth="50.0" text="B4" GridPane.columnIndex="3" />
-            <Button fx:id="btn5" mnemonicParsing="false" onAction="#onInvertir" prefHeight="55.0" prefWidth="62.0" styleClass="botonesCientifica" stylesheets="@calc.css" text="x⁻¹" GridPane.rowIndex="1" />
-            <Button fx:id="btn6" mnemonicParsing="false" onAction="#onSeno" prefHeight="55.0" prefWidth="50.0" styleClass="botonesCientifica" stylesheets="@calc.css" text="sen" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-            <Button fx:id="btn7" mnemonicParsing="false" onAction="#onCoseno" prefHeight="55.0" prefWidth="50.0" styleClass="botonesCientifica" stylesheets="@calc.css" text="cos" GridPane.columnIndex="2" GridPane.rowIndex="1" />
-            <Button fx:id="btn8" mnemonicParsing="false" onAction="#onTangente" prefHeight="55.0" prefWidth="50.0" styleClass="botonesCientifica" stylesheets="@calc.css" text="tan" GridPane.columnIndex="3" GridPane.rowIndex="1" />
-            <Button fx:id="btn9" mnemonicParsing="false" onAction="#onInt" prefHeight="55.0" prefWidth="50.0" styleClass="botonesCientifica" stylesheets="@calc.css" text="Int" GridPane.rowIndex="2" />
-            <Button fx:id="btn10" mnemonicParsing="false" onAction="#onArcSeno" prefHeight="55.0" prefWidth="50.0" styleClass="botonesCientifica" stylesheets="@calc.css" text="arcs" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-            <Button fx:id="btn11" mnemonicParsing="false" onAction="#onArcCos" prefHeight="55.0" prefWidth="50.0" styleClass="botonesCientifica" stylesheets="@calc.css" text="arcc" GridPane.columnIndex="2" GridPane.rowIndex="2" />
-            <Button fx:id="btn12" mnemonicParsing="false" onAction="#onArcTan" prefHeight="55.0" prefWidth="50.0" styleClass="botonesCientifica" stylesheets="@calc.css" text="arct" GridPane.columnIndex="3" GridPane.rowIndex="2" />
-            <Button fx:id="btn13" mnemonicParsing="false" prefHeight="55.0" prefWidth="50.0" text="B13" GridPane.rowIndex="3" />
-            <Button fx:id="btn14" mnemonicParsing="false" prefHeight="55.0" prefWidth="50.0" text="B14" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-            <Button fx:id="btn15" mnemonicParsing="false" prefHeight="55.0" prefWidth="50.0" text="B15" GridPane.columnIndex="2" GridPane.rowIndex="3" />
-            <Button fx:id="btn16" mnemonicParsing="false" prefHeight="55.0" prefWidth="50.0" text="B16" GridPane.columnIndex="3" GridPane.rowIndex="3" />
+            <Button fx:id="idFactorial" mnemonicParsing="false" onAction="#onFactorial" prefHeight="55.0" prefWidth="50.0" styleClass="botonesCientifica" stylesheets="@calc.css" text="!" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+            <Button fx:id="btn2" mnemonicParsing="false" onAction="#onNeperiano" prefHeight="55.0" prefWidth="50.0" styleClass="botonesCientifica" stylesheets="@calc.css" text="ln()" />
+            <Button fx:id="btn3" mnemonicParsing="false" onAction="#onLog10" prefHeight="55.0" prefWidth="50.0" styleClass="botonesCientifica" stylesheets="@calc.css" text="lg10" GridPane.columnIndex="1" />
+            <Button fx:id="btn4" mnemonicParsing="false" prefHeight="55.0" prefWidth="50.0" text="B4" GridPane.columnIndex="2" />
+            <Button fx:id="btn5" mnemonicParsing="false" onAction="#onInvertir" prefHeight="55.0" prefWidth="50.0" styleClass="botonesCientifica" stylesheets="@calc.css" text="x⁻¹" GridPane.columnIndex="2" GridPane.rowIndex="3" />
+            <Button fx:id="btn6" mnemonicParsing="false" onAction="#onSeno" prefHeight="55.0" prefWidth="50.0" styleClass="botonesCientifica" stylesheets="@calc.css" text="sen" GridPane.rowIndex="1" />
+            <Button fx:id="btn7" mnemonicParsing="false" onAction="#onCoseno" prefHeight="55.0" prefWidth="50.0" styleClass="botonesCientifica" stylesheets="@calc.css" text="cos" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+            <Button fx:id="btn8" mnemonicParsing="false" onAction="#onTangente" prefHeight="55.0" prefWidth="50.0" styleClass="botonesCientifica" stylesheets="@calc.css" text="tan" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+            <Button fx:id="btn9" mnemonicParsing="false" onAction="#onInt" prefHeight="55.0" prefWidth="50.0" styleClass="botonesCientifica" stylesheets="@calc.css" text="Int" GridPane.columnIndex="2" GridPane.rowIndex="4" />
+            <Button fx:id="btn10" mnemonicParsing="false" onAction="#onArcSeno" prefHeight="55.0" prefWidth="50.0" styleClass="botonesCientifica" stylesheets="@calc.css" text="arcs" GridPane.rowIndex="2" />
+            <Button fx:id="btn11" mnemonicParsing="false" onAction="#onArcCos" prefHeight="55.0" prefWidth="50.0" styleClass="botonesCientifica" stylesheets="@calc.css" text="arcc" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+            <Button fx:id="btn12" mnemonicParsing="false" onAction="#onArcTan" prefHeight="55.0" prefWidth="50.0" styleClass="botonesCientifica" stylesheets="@calc.css" text="arct" GridPane.columnIndex="2" GridPane.rowIndex="2" />
+            <Button fx:id="btn16" mnemonicParsing="false" onAction="#onNumOro" prefHeight="55.0" prefWidth="50.0" styleClass="botonesCientifica" stylesheets="@calc.css" text="φ" GridPane.columnIndex="1" GridPane.rowIndex="4" />
             <Button fx:id="idE" mnemonicParsing="false" onAction="#onButtonE" prefHeight="55.0" prefWidth="50.0" styleClass="botonesCientifica" stylesheets="@calc.css" text="e" GridPane.rowIndex="4" />
-            <Button fx:id="btn18" mnemonicParsing="false" prefHeight="55.0" prefWidth="50.0" text="B18" GridPane.columnIndex="1" GridPane.rowIndex="4" />
-            <Button fx:id="btn19" mnemonicParsing="false" prefHeight="55.0" prefWidth="50.0" text="B19" GridPane.columnIndex="2" GridPane.rowIndex="4" />
-            <Button fx:id="btn20" mnemonicParsing="false" prefHeight="55.0" prefWidth="50.0" text="B20" GridPane.columnIndex="3" GridPane.rowIndex="4" />
+            <Button fx:id="btn20" mnemonicParsing="false" prefHeight="55.0" prefWidth="50.0" text="B20" GridPane.rowIndex="3" />
         </children>
     </GridPane>
 

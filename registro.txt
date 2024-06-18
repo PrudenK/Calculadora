@@ -94,3 +94,11 @@ Registros -> 93    Fecha -> lunes 17 de junio de 2024 a las 17:32:22
 Registros -> 94    Fecha -> lunes 17 de junio de 2024 a las 17:36:02
 Registros -> 95    Fecha -> lunes 17 de junio de 2024 a las 17:40:34
 Registros -> 96    Fecha -> lunes 17 de junio de 2024 a las 17:44:13
+Registros -> 97    Fecha -> martes 18 de junio de 2024 a las 16:49:05
+Registros -> 98    Fecha -> martes 18 de junio de 2024 a las 16:57:00
+Registros -> 99    Fecha -> martes 18 de junio de 2024 a las 16:58:02
+Registros -> 100   Fecha -> martes 18 de junio de 2024 a las 17:09:27
+Registros -> 101   Fecha -> martes 18 de junio de 2024 a las 17:14:31
+Registros -> 102   Fecha -> martes 18 de junio de 2024 a las 17:14:59
+Registros -> 103   Fecha -> martes 18 de junio de 2024 a las 17:24:39
+Registros -> 104   Fecha -> martes 18 de junio de 2024 a las 17:26:29
