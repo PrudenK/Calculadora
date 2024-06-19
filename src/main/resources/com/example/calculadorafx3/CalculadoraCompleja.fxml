@@ -87,7 +87,7 @@
             <Button fx:id="idFactorial" mnemonicParsing="false" onAction="#onFactorial" prefHeight="55.0" prefWidth="50.0" styleClass="botonesCientifica" stylesheets="@calc.css" text="!" GridPane.columnIndex="1" GridPane.rowIndex="3" />
             <Button fx:id="ln" mnemonicParsing="false" onAction="#onNeperiano" prefHeight="55.0" prefWidth="50.0" styleClass="botonesCientifica" stylesheets="@calc.css" text="ln()" />
             <Button fx:id="log10" mnemonicParsing="false" onAction="#onLog10" prefHeight="55.0" prefWidth="50.0" styleClass="botonesCientifica" stylesheets="@calc.css" text="lg10" GridPane.columnIndex="1" />
-            <Button fx:id="btn4" mnemonicParsing="false" prefHeight="55.0" prefWidth="50.0" text="B4" GridPane.columnIndex="2" />
+            <Button fx:id="logBaseN" mnemonicParsing="false" onAction="#onLogBaseN" prefHeight="55.0" prefWidth="50.0" styleClass="botonesCientifica" stylesheets="@calc.css" text="log" GridPane.columnIndex="2" />
             <Button fx:id="inversa" mnemonicParsing="false" onAction="#onInvertir" prefHeight="55.0" prefWidth="50.0" styleClass="botonesCientifica" stylesheets="@calc.css" text="x⁻¹" GridPane.columnIndex="2" GridPane.rowIndex="3" />
             <Button fx:id="sen" mnemonicParsing="false" onAction="#onSeno" prefHeight="55.0" prefWidth="50.0" styleClass="botonesCientifica" stylesheets="@calc.css" text="sen" GridPane.rowIndex="1" />
             <Button fx:id="cos" mnemonicParsing="false" onAction="#onCoseno" prefHeight="55.0" prefWidth="50.0" styleClass="botonesCientifica" stylesheets="@calc.css" text="cos" GridPane.columnIndex="1" GridPane.rowIndex="1" />

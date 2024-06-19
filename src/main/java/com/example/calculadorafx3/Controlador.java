@@ -74,6 +74,7 @@ public class Controlador implements Initializable {
         operandosComplejos.add("ArcCos(");
         operandosComplejos.add("ArcTan(");
         operandosComplejos.add("log10(");
+        operandosComplejos.add("log(");
     }
     private String buscarOperadorComplejo(String txt){
         String cadenaOpComplejo = null;
@@ -230,7 +231,7 @@ public class Controlador implements Initializable {
         onOperador("-");
         String txt = pantalla.getText();
         String opComlejo = buscarOperadorComplejo(txt);
-        if(opComlejo != null && !opComlejo.equals("ln(") && !opComlejo.equals("log10(")){
+        if(opComlejo != null && !opComlejo.equals("ln(") && !opComlejo.equals("log10(") && !opComlejo.contains("log(")){
             int indicePrimerParentesis = txt.indexOf("(");
             int indiceUltimoParentesis = txt.indexOf(")");
             if(txt.contains(opComlejo+"-")){
@@ -345,7 +346,9 @@ public class Controlador implements Initializable {
                 operando2 = operandos(operando2String, false);
                 if(operando1 % 2 == 0 && menosDentroRaiz){
                     mostrarAlerta("No puedes hacer una raíz de indice par con radicando negativo");
-                }else {
+                } else if (Double.parseDouble(String.valueOf(operando1)) == 0.0) {
+                    mostrarAlerta("El indice de la raiz no es 0");
+                } else {
                     double resultado = Math.pow(operando2, 1.0 / operando1);
                     if(menosDentroRaiz){
                         resultado *= -1;
@@ -413,6 +416,17 @@ public class Controlador implements Initializable {
                         errorLogaritmo = true;
                     } else {
                         operando = Math.log10(operando);
+                    }
+                }else if (txt.contains("log(")) {
+                    String base = txt.substring(0,indicePrimerParentesis-3);
+                    if (Double.parseDouble(String.valueOf(operando)) == 0.0) {
+                        mostrarAlerta("Fieraaa que no puedes hacer un logarítmo de 0");
+                        errorLogaritmo = true;
+                    } else if((menosDelante || Double.parseDouble(base) == 0.0)){
+                        mostrarAlerta("La base del logarítmo no puede ser menor o igual que 0");
+                        errorLogaritmo = true;
+                    }else {
+                        operando = Math.log(operando) / Math.log(Double.parseDouble(base));
                     }
                 }
 
@@ -726,11 +740,20 @@ public class Controlador implements Initializable {
     protected void onNumOro(){
         expresionesMatematicas('φ');
     }
+    private void agregarExpresionN(String operador){
+        String txt = pantalla.getText();
+        if(patronNumsAntesRaiz.matcher(txt).matches() && !txt.isEmpty() && !txt.equals("-")){
+            pantalla.setText(txt+operador);
+        }else {
+            mostrarAlerta("Tienes que añadir la base o raíz delante y tiene que ser un parámetro válido");
+        }
+    }
     @FXML
     protected void onRaizX(){
-        String txt = pantalla.getText();
-        if(patronNumsAntesRaiz.matcher(txt).matches() && !txt.isEmpty()){
-            pantalla.setText(txt+"√");
-        }
+        agregarExpresionN("√");
+    }
+    @FXML
+    protected void onLogBaseN(){
+        agregarExpresionN("log()");
     }
 }
