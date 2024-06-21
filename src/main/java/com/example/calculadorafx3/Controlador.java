@@ -5,11 +5,11 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
+import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Pane;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 import java.io.*;
@@ -28,9 +28,13 @@ public class Controlador implements Initializable {
     private final Pattern puntoDespuesDelOperador = Pattern.compile("^-?\\d*\\.?\\d*[-+x√/%^]\\d+\\.$");
     private final Pattern patronDespuesOperadorNumsEspeciales = Pattern.compile("^-?(e|π|φ|(\\d*\\.?\\d*))[-+x/%^][φπe]$");
     private final Pattern patronNumsAntesRaiz = Pattern.compile("^-?(e|π|φ|(\\d*\\.?\\d*))$");
+    @FXML protected RadioButton rbX2, rbx, rbc, rbr;
+    @FXML protected Label labelx2, labelx1, labelC, labelR, idEcuacionLabel, LabelSolucionX1, LabelSolucionX2 ;
     @FXML protected GridPane cientifica;
-    @FXML
-    private Label pantalla;
+    @FXML private Pane ecuaciones2Grado, ecuaciones2Grado2;
+    @FXML private Label pantalla;
+    @FXML private Text operacionAnteriror;
+    private boolean pantallaEcuaciones = false;
     private final Set<Character> caracteresExcluidos = new HashSet<>();
     private final char[] caracteresProhibidos = new char[]{'+', 'x', '/', '%','^','√'};
     private final String operadores = "+x/%-^";
@@ -38,6 +42,8 @@ public class Controlador implements Initializable {
     private double xOffset = 0;
     private double yOffset = 0;
     private ArrayList<String> operandosComplejos = new ArrayList<>();
+    private ArrayList<Button> botonesDesactivarEcuaciones = new ArrayList<>();
+    @FXML private Button idPorcentaje, idBarra, idPotencia, idMenos, idCuadrado, idMas, idRaiz,idX;
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         try {
@@ -66,6 +72,15 @@ public class Controlador implements Initializable {
         }
         caracteresExcluidos.add('-');
         stageCalculadora = Calcuadora.getStage();
+
+        setOperandosComplejos();
+
+        setGrupoBotones();
+
+        setBotonesDesactivarEcuaciones();
+
+    }
+    private void setOperandosComplejos(){
         operandosComplejos.add("ln(");
         operandosComplejos.add("sen(");
         operandosComplejos.add("cos(");
@@ -75,6 +90,23 @@ public class Controlador implements Initializable {
         operandosComplejos.add("ArcTan(");
         operandosComplejos.add("log10(");
         operandosComplejos.add("log(");
+    }
+    private void setBotonesDesactivarEcuaciones(){
+        botonesDesactivarEcuaciones.add(idPorcentaje);
+        botonesDesactivarEcuaciones.add(idBarra);
+        botonesDesactivarEcuaciones.add(idPotencia);
+        botonesDesactivarEcuaciones.add(idMenos);
+        botonesDesactivarEcuaciones.add(idCuadrado);
+        botonesDesactivarEcuaciones.add(idMas);
+        botonesDesactivarEcuaciones.add(idRaiz);
+        botonesDesactivarEcuaciones.add(idX);
+    }
+    private void setGrupoBotones(){
+        ToggleGroup botonesEcuacionesRadio = new ToggleGroup();
+        rbX2.setToggleGroup(botonesEcuacionesRadio);
+        rbx.setToggleGroup(botonesEcuacionesRadio);
+        rbc.setToggleGroup(botonesEcuacionesRadio);
+        rbr.setToggleGroup(botonesEcuacionesRadio);
     }
     private String buscarOperadorComplejo(String txt){
         String cadenaOpComplejo = null;
@@ -88,11 +120,26 @@ public class Controlador implements Initializable {
     }
     @FXML
     protected void onButton00() {
+        if(!pantallaEcuaciones) {
+            onButton00Ecuaciones(pantalla);
+        }else{
+            if(rbX2.isSelected()){
+                onButton00Ecuaciones(labelx2);
+            } else if (rbx.isSelected()) {
+                onButton00Ecuaciones(labelx1);
+            } else if (rbc.isSelected()) {
+                onButton00Ecuaciones(labelC);
+            } else if (rbr.isSelected()) {
+                onButton00Ecuaciones(labelR);
+            }
+        }
+    }
+    private void onButton00Ecuaciones(Label pantalla){
         String txt = pantalla.getText();
         Pattern pattern = Pattern.compile("^-?\\d*\\.?\\d*[-+x/√%^]\\d*\\.?\\d*$");
         String operandoComplejo = buscarOperadorComplejo(txt);
         if(operandoComplejo != null){
-            operandosComplejos00(operandoComplejo+")");
+            operandosComplejos00(operandoComplejo+")", pantalla);
         }else if(txt.contains("∞")){
             pantalla.setText("0");
         }else {
@@ -136,7 +183,7 @@ public class Controlador implements Initializable {
             }
         }
     }
-    private void operandosComplejos00(String operando){
+    private void operandosComplejos00(String operando, Label pantalla){
         String txt = pantalla.getText();
         boolean menosDelante = false;
         if(txt.startsWith("-")){
@@ -202,16 +249,47 @@ public class Controlador implements Initializable {
     }
     @FXML
     protected void onButtonAC() {
+        if(!pantallaEcuaciones) {
+            onACEcuaciones(pantalla);
+        }else{
+            if(rbX2.isSelected()){
+                onACEcuaciones(labelx2);
+            } else if (rbx.isSelected()) {
+                onACEcuaciones(labelx1);
+            } else if (rbc.isSelected()) {
+                onACEcuaciones(labelC);
+            } else if (rbr.isSelected()) {
+                onACEcuaciones(labelR);
+            }
+        }
+
+    }
+    private void onACEcuaciones(Label pantalla){
         pantalla.setText("0");
     }
     @FXML
     protected void onButtonMasMenos() {
+        if(!pantallaEcuaciones) {
+            escrbirMasMenosPantalla(pantalla);
+        }else{
+            if(rbX2.isSelected()){
+                escrbirMasMenosPantalla(labelx2);
+            } else if (rbx.isSelected()) {
+                escrbirMasMenosPantalla(labelx1);
+            } else if (rbc.isSelected()) {
+                escrbirMasMenosPantalla(labelC);
+            } else if (rbr.isSelected()) {
+                escrbirMasMenosPantalla(labelR);
+            }
+        }
+    }
+    private void escrbirMasMenosPantalla(Label pantalla){
         if(pantalla.getText().isEmpty()){
             pantalla.setText("-");
         }else if(pantalla.getText().charAt(0) == '-'){
             pantalla.setText(pantalla.getText().substring(1));
         }else {
-            pantalla.setText("-"+this.pantalla.getText());
+            pantalla.setText("-"+pantalla.getText());
         }
     }
     @FXML
@@ -270,6 +348,21 @@ public class Controlador implements Initializable {
     }
     @FXML
     protected void onButtonPunto(){
+        if(!pantallaEcuaciones) {
+            escribirPuntoPantalla(pantalla);
+        }else{
+            if(rbX2.isSelected()){
+                escribirPuntoPantalla(labelx2);
+            } else if (rbx.isSelected()) {
+                escribirPuntoPantalla(labelx1);
+            } else if (rbc.isSelected()) {
+                escribirPuntoPantalla(labelC);
+            } else if (rbr.isSelected()) {
+                escribirPuntoPantalla(labelR);
+            }
+        }
+    }
+    private void escribirPuntoPantalla(Label pantalla){
         String txt = pantalla.getText();
         boolean ultNumPunto = false;
         String opComlejo = buscarOperadorComplejo(txt);
@@ -325,153 +418,196 @@ public class Controlador implements Initializable {
     @FXML
     protected void onButtonIgual() {
         String txt = pantalla.getText();
-        if(!txt.isEmpty()) {
-            boolean menosDelante = false;
-            if (txt.charAt(0) == '-') {
-                txt = txt.substring(1);
-                menosDelante = true;
-            }
-            String opComlejo = buscarOperadorComplejo(pantalla.getText());
-            if(txt.contains("√")){
-                boolean menosDentroRaiz = false;
-                int indiceRaiz = txt.indexOf("√");
-                if(txt.contains("-")){
-                    txt = txt.substring(0,indiceRaiz+1) + txt.substring(indiceRaiz+2);
-                    menosDentroRaiz = true;
+        if(!pantallaEcuaciones) {
+            if (!txt.isEmpty()) {
+                operacionAnteriror.setText(txt);
+                boolean menosDelante = false;
+                if (txt.charAt(0) == '-') {
+                    txt = txt.substring(1);
+                    menosDelante = true;
                 }
-                String operando1String = txt.split("√")[0];
-                String operando2String = txt.split("√")[1];
-                double operando1, operando2;
-                operando1 = operandos(operando1String, menosDelante);
-                operando2 = operandos(operando2String, false);
-                if(operando1 % 2 == 0 && menosDentroRaiz){
-                    mostrarAlerta("No puedes hacer una raíz de indice par con radicando negativo");
-                } else if (Double.parseDouble(String.valueOf(operando1)) == 0.0) {
-                    mostrarAlerta("El indice de la raiz no es 0");
+                String opComlejo = buscarOperadorComplejo(pantalla.getText());
+                if (txt.contains("√")) {
+                    boolean menosDentroRaiz = false;
+                    int indiceRaiz = txt.indexOf("√");
+                    if (txt.contains("-")) {
+                        txt = txt.substring(0, indiceRaiz + 1) + txt.substring(indiceRaiz + 2);
+                        menosDentroRaiz = true;
+                    }
+                    String operando1String = txt.split("√")[0];
+                    String operando2String = txt.split("√")[1];
+                    double operando1, operando2;
+                    operando1 = operandos(operando1String, menosDelante);
+                    operando2 = operandos(operando2String, false);
+                    if (operando1 % 2 == 0 && menosDentroRaiz) {
+                        mostrarAlerta("No puedes hacer una raíz de indice par con radicando negativo");
+                    } else if (Double.parseDouble(String.valueOf(operando1)) == 0.0) {
+                        mostrarAlerta("El indice de la raiz no es 0");
+                    } else {
+                        double resultado = Math.pow(operando2, 1.0 / operando1);
+                        if (menosDentroRaiz) {
+                            resultado *= -1;
+                        }
+                        pantalla.setText(df.format(resultado));
+                    }
+                } else if (opComlejo != null && !txt.endsWith("()") && !txt.endsWith("(-)")) {
+                    boolean menosDelanteOpComplejo = false;
+                    boolean errorTangente = false;
+                    boolean errorArcos = false;
+                    boolean errorLogaritmo = false;
+                    int indicePrimerParentesis = txt.indexOf("(");
+                    int indiceUltimoParentesis = txt.indexOf(")");
+                    double operando;
+                    String operandoString = txt.substring(indicePrimerParentesis + 1, indiceUltimoParentesis);
+                    if (operandoString.contains("-")) {
+                        menosDelanteOpComplejo = true;
+                        operandoString = operandoString.substring(1);
+                    }
+                    operando = operandos(operandoString, menosDelanteOpComplejo);
+
+                    if (txt.contains("ln(")) {
+                        if (Double.parseDouble(String.valueOf(operando)) == 0.0) {
+                            mostrarAlerta("Fieraaa que no puedes hacer un logarítmo neperiano de 0");
+                            errorLogaritmo = true;
+                        } else {
+                            operando = Math.log(operando);
+                        }
+                    } else if (txt.contains("en(")) {
+                        if (txt.contains("Arc")) {
+                            if (operando > 1 || operando < -1) {
+                                mostrarAlerta("Jefazooo no puedes calcular un arcoseno de un númoer mayor que 1 o menor que menos 1");
+                                errorArcos = true;
+                            } else {
+                                operando = Math.toDegrees(Math.asin(operando));
+                            }
+                        } else {
+                            operando = Math.sin(Math.toRadians(operando));
+                        }
+                    } else if (txt.contains("os(")) {
+                        if (txt.contains("Arc")) {
+                            if (operando > 1 || operando < -1) {
+                                mostrarAlerta("Jefazooo no puedes calcular un arcoseno de un númoer mayor que 1 o menor que menos 1");
+                                errorArcos = true;
+                            } else {
+                                operando = Math.toDegrees(Math.acos(operando));
+                            }
+                        } else {
+                            operando = Math.cos(Math.toRadians(operando));
+                        }
+                    } else if (txt.contains("an(")) {
+                        if (txt.contains("Arc")) {
+                            operando = Math.toDegrees(Math.atan(operando));
+                        } else {
+                            if (operando % 90 == 0 && operando % 180 != 0) {
+                                errorTangente = true;
+                                mostrarAlerta("Chavalíiiin no existe la tangete de un número que sea múltiplo de 90 y no de 180\nTiende a infinito y esas cosas raras");
+                            } else {
+                                operando = Math.tan(Math.toRadians(operando));
+                            }
+                        }
+                    } else if (txt.contains("log10(")) {
+                        if (Double.parseDouble(String.valueOf(operando)) == 0.0) {
+                            mostrarAlerta("Fieraaa que no puedes hacer un logarítmo de 0");
+                            errorLogaritmo = true;
+                        } else {
+                            operando = Math.log10(operando);
+                        }
+                    } else if (txt.contains("log(")) {
+                        String base = txt.substring(0, indicePrimerParentesis - 3);
+                        if (Double.parseDouble(String.valueOf(operando)) == 0.0) {
+                            mostrarAlerta("Fieraaa que no puedes hacer un logarítmo de 0");
+                            errorLogaritmo = true;
+                        } else if ((menosDelante || Double.parseDouble(base) == 0.0)) {
+                            mostrarAlerta("La base del logarítmo no puede ser menor o igual que 0");
+                            errorLogaritmo = true;
+                        } else {
+                            operando = Math.log(operando) / Math.log(Double.parseDouble(base));
+                        }
+                    }
+
+                    if (menosDelante) {
+                        operando *= -1;
+                    }
+                    if (!errorTangente && !errorArcos && !errorLogaritmo) {
+                        pantalla.setText(df.format(operando));
+                    }
+                } else if (txt.endsWith("+") || txt.endsWith("-") || txt.endsWith("/") || txt.endsWith("x") || txt.endsWith("%") || txt.endsWith("^")) {
+                    mostrarAlerta("Introduce el segundo número");
                 } else {
-                    double resultado = Math.pow(operando2, 1.0 / operando1);
-                    if(menosDentroRaiz){
-                        resultado *= -1;
+                    if (txt.equals("π") || txt.equals("φ") || txt.equals("e")) {
+                        pantalla.setText(String.valueOf(operandos(txt, menosDelante)));
                     }
-                    pantalla.setText(df.format(resultado));
-                }
-            } else if (opComlejo != null && !txt.endsWith("()") && !txt.endsWith("(-)")) {
-                boolean menosDelanteOpComplejo = false;
-                boolean errorTangente = false;
-                boolean errorArcos = false;
-                boolean errorLogaritmo = false;
-                int indicePrimerParentesis = txt.indexOf("(");
-                int indiceUltimoParentesis = txt.indexOf(")");
-                double operando;
-                String operandoString = txt.substring(indicePrimerParentesis + 1, indiceUltimoParentesis);
-                if (operandoString.contains("-")) {
-                    menosDelanteOpComplejo = true;
-                    operandoString = operandoString.substring(1);
-                }
-                operando = operandos(operandoString,menosDelanteOpComplejo);
-
-                if (txt.contains("ln(")) {
-                    if (Double.parseDouble(String.valueOf(operando)) == 0.0) {
-                        mostrarAlerta("Fieraaa que no puedes hacer un logarítmo neperiano de 0");
-                        errorLogaritmo = true;
-                    } else {
-                        operando = Math.log(operando);
-                    }
-                } else if (txt.contains("en(")) {
-                    if (txt.contains("Arc")) {
-                        if (operando > 1 || operando < -1) {
-                            mostrarAlerta("Jefazooo no puedes calcular un arcoseno de un númoer mayor que 1 o menor que menos 1");
-                            errorArcos = true;
-                        } else {
-                            operando = Math.toDegrees(Math.asin(operando));
+                    if ((txt.contains("+") || txt.contains("/") || txt.contains("%") || txt.contains("x") || txt.contains("-") || txt.contains("^")) && opComlejo == null) {
+                        int indiceOperadorInt = indiceOperador(txt);
+                        double operando1 = operandos(txt.substring(0, indiceOperadorInt), menosDelante);
+                        double operando2 = operandos(txt.substring(indiceOperadorInt + 1), false);
+                        double resultado = 0;
+                        if (txt.contains("+")) {
+                            resultado = operando1 + operando2;
+                        } else if (txt.contains("x")) {
+                            resultado = operando1 * operando2;
+                        } else if (txt.contains("-")) {
+                            resultado = operando1 - operando2;
+                        } else if (txt.contains("%")) {
+                            if (operando2 == 0.0) {
+                                mostrarAlerta("No puedes hacer n % 0 maquinón");
+                            } else {
+                                resultado = operando1 % operando2;
+                            }
+                        } else if (txt.contains("/")) {
+                            if (operando2 == 0.0) {
+                                mostrarAlerta("No puedes divir por 0 máquina");
+                            } else {
+                                resultado = operando1 / operando2;
+                            }
+                        } else if (txt.contains("^")) {
+                            resultado = Math.pow(operando1, operando2);
                         }
-                    } else {
-                        operando = Math.sin(Math.toRadians(operando));
+                        pantalla.setText(df.format(resultado));
                     }
-                } else if (txt.contains("os(")) {
-                    if (txt.contains("Arc")) {
-                        if (operando > 1 || operando < -1) {
-                            mostrarAlerta("Jefazooo no puedes calcular un arcoseno de un númoer mayor que 1 o menor que menos 1");
-                            errorArcos = true;
-                        } else {
-                            operando = Math.toDegrees(Math.acos(operando));
-                        }
-                    } else {
-                        operando = Math.cos(Math.toRadians(operando));
-                    }
-                } else if (txt.contains("an(")) {
-                    if (txt.contains("Arc")) {
-                        operando = Math.toDegrees(Math.atan(operando));
-                    } else {
-                        if (operando % 90 == 0 && operando % 180 != 0) {
-                            errorTangente = true;
-                            mostrarAlerta("Chavalíiiin no existe la tangete de un número que sea múltiplo de 90 y no de 180\nTiende a infinito y esas cosas raras");
-                        } else {
-                            operando = Math.tan(Math.toRadians(operando));
-                        }
-                    }
-                } else if (txt.contains("log10(")) {
-                    if (Double.parseDouble(String.valueOf(operando)) == 0.0) {
-                        mostrarAlerta("Fieraaa que no puedes hacer un logarítmo de 0");
-                        errorLogaritmo = true;
-                    } else {
-                        operando = Math.log10(operando);
-                    }
-                }else if (txt.contains("log(")) {
-                    String base = txt.substring(0,indicePrimerParentesis-3);
-                    if (Double.parseDouble(String.valueOf(operando)) == 0.0) {
-                        mostrarAlerta("Fieraaa que no puedes hacer un logarítmo de 0");
-                        errorLogaritmo = true;
-                    } else if((menosDelante || Double.parseDouble(base) == 0.0)){
-                        mostrarAlerta("La base del logarítmo no puede ser menor o igual que 0");
-                        errorLogaritmo = true;
-                    }else {
-                        operando = Math.log(operando) / Math.log(Double.parseDouble(base));
-                    }
-                }
-
-                if (menosDelante) {
-                    operando *= -1;
-                }
-                if (!errorTangente && !errorArcos && !errorLogaritmo) {
-                    pantalla.setText(df.format(operando));
-                }
-            } else if (txt.endsWith("+") || txt.endsWith("-") || txt.endsWith("/") || txt.endsWith("x") || txt.endsWith("%") || txt.endsWith("^")) {
-                mostrarAlerta("Introduce el segundo número");
-            } else {
-                if (txt.equals("π") || txt.equals("φ") || txt.equals("e")) {
-                    pantalla.setText(String.valueOf(operandos(txt,menosDelante)));
-                }
-                if ((txt.contains("+") || txt.contains("/") || txt.contains("%") || txt.contains("x") || txt.contains("-") || txt.contains("^")) && opComlejo == null) {
-                    int indiceOperadorInt = indiceOperador(txt);
-                    double operando1 = operandos(txt.substring(0, indiceOperadorInt),menosDelante);
-                    double operando2 = operandos(txt.substring(indiceOperadorInt + 1),false);
-                    double resultado = 0;
-                    if (txt.contains("+")) {
-                        resultado = operando1 + operando2;
-                    } else if (txt.contains("x")) {
-                        resultado = operando1 * operando2;
-                    } else if (txt.contains("-")) {
-                        resultado = operando1 - operando2;
-                    } else if (txt.contains("%")) {
-                        if (operando2 == 0.0) {
-                            mostrarAlerta("No puedes hacer n % 0 maquinón");
-                        } else {
-                            resultado = operando1 % operando2;
-                        }
-                    } else if (txt.contains("/")) {
-                        if (operando2 == 0.0) {
-                            mostrarAlerta("No puedes divir por 0 máquina");
-                        } else {
-                            resultado = operando1 / operando2;
-                        }
-                    } else if (txt.contains("^")) {
-                        resultado = Math.pow(operando1, operando2);
-                    }
-                    pantalla.setText(df.format(resultado));
                 }
             }
+        }else {
+            calcularEcuaciones();
         }
+    }
+    private void calcularEcuaciones(){
+        double a = operandoEcuaciones(labelx2);
+        double b = operandoEcuaciones(labelx1);
+        double c = operandoEcuaciones(labelC);
+        double r = operandoEcuaciones(labelR);
+        double resultado1,resultado2;
+        idEcuacionLabel.setText(a+"x² "+b+"x "+c+" = "+r);
+        if(a != 0.0) {
+            c = c - r;
+            double radicando = Math.pow(b, 2) + (-4 * a * c);
+            if (radicando < 0) {
+                LabelSolucionX1.setText("Sin solución");
+                LabelSolucionX2.setText("");
+            } else if (radicando == 0) {
+                resultado1 = -b / (2 * a);
+                LabelSolucionX1.setText("Solución doble");
+                LabelSolucionX2.setText("x = " + df.format(resultado1));
+            } else {
+                resultado1 = (-b + Math.sqrt(radicando)) / (2 * a);
+                resultado2 = (-b - Math.sqrt(radicando)) / (2 * a);
+                LabelSolucionX1.setText("x₁ = " + df.format(resultado1));
+                LabelSolucionX2.setText("x₂ = " + df.format(resultado2));
+            }
+        }else if (b != 0.0){
+            r = r -c;
+            LabelSolucionX1.setText("Ecuación de 1ᵉʳ grado");
+            LabelSolucionX2.setText("X = "+ df.format(r/b));
+        }else {
+            mostrarAlerta("A mo a ve, tu eres tonto o q");
+        }
+    }
+    private double operandoEcuaciones(Label pantalla){
+        double op = 0;
+        if(!pantalla.getText().isEmpty()){
+            op = Double.parseDouble(pantalla.getText());
+        }
+        return op;
     }
     private int indiceOperador(String txt){
         return IntStream.range(0, txt.length()).filter(i -> this.operadores.indexOf(txt.charAt(i)) != -1).findFirst().getAsInt();
@@ -494,22 +630,37 @@ public class Controlador implements Initializable {
         return true;
     }
     private void agregarNumero(String num) {
+        if(!pantallaEcuaciones) {
+            escribirNumPantalla(num,pantalla);
+        }else{
+            if(rbX2.isSelected()){
+                escribirNumPantalla(num,labelx2);
+            } else if (rbx.isSelected()) {
+                escribirNumPantalla(num,labelx1);
+            } else if (rbc.isSelected()) {
+                escribirNumPantalla(num,labelC);
+            } else if (rbr.isSelected()) {
+                escribirNumPantalla(num,labelR);
+            }
+        }
+    }
+    private void escribirNumPantalla(String num, Label pantalla){
         String txt = pantalla.getText();
         String opComlejo = buscarOperadorComplejo(txt);
-        if(opComlejo != null) {
-            if((!txt.contains("-e") || !txt.contains("e") || (txt.contains(opComlejo) && !txt.contains(opComlejo+"e)") && !txt.contains(opComlejo+"-e)")))
+        if (opComlejo != null) {
+            if ((!txt.contains("-e") || !txt.contains("e") || (txt.contains(opComlejo) && !txt.contains(opComlejo + "e)") && !txt.contains(opComlejo + "-e)")))
                     && !txt.contains("π") && !txt.contains("φ") && !txt.contains("-π") && !txt.contains("-φ")) {
                 int indiceultimoParentesis = txt.lastIndexOf(")");
                 String cadenaAnterior = txt.substring(0, indiceultimoParentesis);
-                if(txt.contains("(0)") || txt.contains("(-0)")){
-                    pantalla.setText(cadenaAnterior.substring(0,cadenaAnterior.length()-1)+num+")");
-                }else {
+                if (txt.contains("(0)") || txt.contains("(-0)")) {
+                    pantalla.setText(cadenaAnterior.substring(0, cadenaAnterior.length() - 1) + num + ")");
+                } else {
                     pantalla.setText(cadenaAnterior + num + ")");
                 }
             }
-        }else if(txt.contains("∞")){
+        } else if (txt.contains("∞")) {
             pantalla.setText(num);
-        }else {
+        } else {
             Pattern pattern = Pattern.compile("^-?\\d*\\.?\\d*[-+x/%^√]-?0$");
             Pattern patterPi = Pattern.compile("^-?[φπe][-+x/%^√]-?0$");
             Pattern pi = Pattern.compile("^-?[φπe]$");
@@ -537,6 +688,22 @@ public class Controlador implements Initializable {
     }
     @FXML
     protected void onAtras() {
+        if(!pantallaEcuaciones){
+            onAtrasEcuaciones(pantalla);
+        }else {
+            if(rbX2.isSelected()){
+                onAtrasEcuaciones(labelx2);
+            } else if (rbx.isSelected()) {
+                onAtrasEcuaciones(labelx1);
+            } else if (rbc.isSelected()) {
+                onAtrasEcuaciones(labelC);
+            } else if (rbr.isSelected()) {
+                onAtrasEcuaciones(labelR);
+            }
+        }
+
+    }
+    private void onAtrasEcuaciones(Label pantalla){
         boolean opSolo = false;
         String txt = pantalla.getText();
         String atras;
@@ -562,28 +729,36 @@ public class Controlador implements Initializable {
     @FXML
     protected void onCuadrado() {
         if(patronCuadradoRaiz.matcher(pantalla.getText()).matches()){
+            operacionAnteriror.setText(pantalla.getText()+"^2");
             pantalla.setText(df.format(Math.pow(Double.parseDouble(pantalla.getText()),2)));
         }else if (pantalla.getText().equals("π") || pantalla.getText().equals("-π")) {
+            operacionAnteriror.setText(pantalla.getText()+"^2");
             pantalla.setText(df.format(Math.pow(3.1415,2)));
         }else if (pantalla.getText().equals("e") || pantalla.getText().equals("-e")) {
+            operacionAnteriror.setText(pantalla.getText()+"^2");
             pantalla.setText(df.format(Math.pow(2.7182,2)));
         }else if (pantalla.getText().equals("φ") || pantalla.getText().equals("-φ")) {
+            operacionAnteriror.setText(pantalla.getText()+"^2");
             pantalla.setText(df.format(Math.pow(1.618,2)));
         }
     }
     @FXML
     protected void onRaiz() {
         if(patronCuadradoRaiz.matcher(pantalla.getText()).matches()){
+            operacionAnteriror.setText("√"+pantalla.getText());
             if(pantalla.getText().contains("-")){
                 mostrarAlerta("Alma de cantaro, las raices de indice par de número negativos no existen (bueno si pero...)");
             } else {
                 pantalla.setText(df.format(Math.sqrt(Double.parseDouble(pantalla.getText()))));
             }
         }else if (pantalla.getText().equals("π")) {
+            operacionAnteriror.setText("√"+pantalla.getText());
             pantalla.setText(df.format(Math.sqrt(3.1415)));
         }else if (pantalla.getText().equals("e")) {
+            operacionAnteriror.setText("√"+pantalla.getText());
             pantalla.setText(df.format(Math.sqrt(2.7182)));
         }else if (pantalla.getText().equals("φ")) {
+            operacionAnteriror.setText("√"+pantalla.getText());
             pantalla.setText(df.format(Math.sqrt(1.618)));
         }
     }
@@ -605,15 +780,35 @@ public class Controlador implements Initializable {
 
     @FXML
     protected void onCientifica(){
-        ajustarStage(true);
+        ajustarStageEcuaciones(false);
+        ajustarStageCientifica(true);
+        activarBotonesEcuaciones(false);
         pantalla.setPrefWidth(410);
+        pantallaEcuaciones = false;
+        onDEL();
     }
     @FXML
     protected void onBasica(){
-        ajustarStage(false);
+        ajustarStageCientifica(false);
+        ajustarStageEcuaciones(false);
+        activarBotonesEcuaciones(false);
         pantalla.setPrefWidth(247);
+        pantallaEcuaciones = false;
+
+        onDEL();
     }
-    private void ajustarStage(boolean expand) {
+    @FXML
+    protected void onEcuaciones(){
+        ajustarStageCientifica(false);
+        ajustarStageEcuaciones(true);
+        activarBotonesEcuaciones(true);
+        pantalla.setPrefWidth(410);
+        pantalla.setText("");
+        operacionAnteriror.setText("");
+        pantallaEcuaciones = true;
+        rbX2.setSelected(true);
+    }
+    private void ajustarStageCientifica(boolean expand) {
         Stage stage = (Stage) cientifica.getScene().getWindow();
         if (expand) {
             cientifica.setVisible(true);
@@ -623,9 +818,22 @@ public class Controlador implements Initializable {
             stage.setWidth(276);
         }
     }
+    private void ajustarStageEcuaciones(boolean expand) {
+        Stage stage = (Stage) ecuaciones2Grado.getScene().getWindow();
+        if (expand) {
+            ecuaciones2Grado.setVisible(true);
+            ecuaciones2Grado2.setVisible(true);
+            stage.setWidth(437);
+        } else {
+            ecuaciones2Grado.setVisible(false);
+            ecuaciones2Grado2.setVisible(false);
+            stage.setWidth(276);
+        }
+    }
     @FXML
     protected void onFactorial(){
         if(patronNumEnteroPositivo.matcher(pantalla.getText()).matches()){
+            operacionAnteriror.setText("!"+pantalla.getText());
             int num = Integer.parseInt(pantalla.getText());
             if(num > 25){
                 pantalla.setText("∞");
@@ -707,6 +915,7 @@ public class Controlador implements Initializable {
     }
     @FXML
     protected void onInvertir(){
+        operacionAnteriror.setText(pantalla.getText()+"^-1");
         if(patronCuadradoRaiz.matcher(pantalla.getText()).matches()){
             pantalla.setText(df.format(Math.pow(Double.parseDouble(pantalla.getText()),-1)));
         }else if (pantalla.getText().equals("π") || pantalla.getText().equals("-π")) {
@@ -731,7 +940,8 @@ public class Controlador implements Initializable {
     }
     @FXML
     protected void onInt(){
-        if (patronCuadradoRaiz.matcher(pantalla.getText()).matches()){
+        if (patronCuadradoRaiz.matcher(pantalla.getText()).matches() && !pantalla.getText().isEmpty() && !pantalla.getText().equals("-")){
+            operacionAnteriror.setText("Int("+pantalla.getText()+")");
             String[] value = pantalla.getText().split("\\.");
             pantalla.setText(String.valueOf(value[0]));
         }
@@ -755,5 +965,21 @@ public class Controlador implements Initializable {
     @FXML
     protected void onLogBaseN(){
         agregarExpresionN("log()");
+    }
+    @FXML
+    protected void onDEL() {
+        labelx2.setText("0");
+        labelx1.setText("0");
+        labelC.setText("0");
+        labelR.setText("0");
+        idEcuacionLabel.setText("");
+        LabelSolucionX1.setText("");
+        LabelSolucionX2.setText("");
+        rbX2.setSelected(true);
+    }
+    private void activarBotonesEcuaciones(boolean encender){
+        for (Button botonesDesactivarEcuacione : botonesDesactivarEcuaciones) {
+            botonesDesactivarEcuacione.setDisable(encender);
+        }
     }
 }

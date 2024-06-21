@@ -42,3 +42,16 @@
     -fx-font-size: 12px; /* Tamaño de la fuente */
     -fx-font-weight: bold; /* Negrita */
 }
+.textoEcuaciones{
+    -fx-text-fill: white;
+    -fx-font-size: 18px; /* Tamaño de la fuente */
+    -fx-font-weight: bold; /* Negrita */
+}
+.DEL {
+    -fx-background-color: #ff5c5c;
+    -fx-border-width: 0.5px;
+    -fx-border-color: white;
+    -fx-text-fill: white;
+    -fx-font-size: 12px; /* Tamaño de la fuente */
+    -fx-font-weight: bold; /* Negrita */
+}
