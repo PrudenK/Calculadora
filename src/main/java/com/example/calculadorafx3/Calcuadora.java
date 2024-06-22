@@ -26,6 +26,8 @@ public class Calcuadora extends Application {
 
         st = stage;
 
+        Controlador controlador = fxmlLoader.getController();
+        controlador.pasarEscena(scene);
     }
     public static void main(String[] args) {
         launch();

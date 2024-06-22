@@ -1,11 +1,13 @@
 package com.example.calculadorafx3;
 
 import javafx.application.Platform;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
@@ -30,7 +32,7 @@ public class Controlador implements Initializable {
     private final Pattern patronNumsAntesRaiz = Pattern.compile("^-?(e|π|φ|(\\d*\\.?\\d*))$");
     @FXML protected RadioButton rbX2, rbx, rbc, rbr;
     @FXML protected Label labelx2, labelx1, labelC, labelR, idEcuacionLabel, LabelSolucionX1, LabelSolucionX2 ;
-    @FXML protected GridPane cientifica;
+    @FXML protected GridPane cientifica, gridPaneBasica, gridPaneEcuaciones;
     @FXML private Pane ecuaciones2Grado, ecuaciones2Grado2;
     @FXML private Label pantalla;
     @FXML private Text operacionAnteriror;
@@ -79,7 +81,42 @@ public class Controlador implements Initializable {
 
         setBotonesDesactivarEcuaciones();
 
+        rbX2.addEventFilter(KeyEvent.KEY_PRESSED, event -> pasarAlSiguiente(event, rbx));
+        rbx.addEventFilter(KeyEvent.KEY_PRESSED, event -> pasarAlSiguiente(event, rbc));
+        rbc.addEventFilter(KeyEvent.KEY_PRESSED, event -> pasarAlSiguiente(event, rbr));
+        rbr.addEventFilter(KeyEvent.KEY_PRESSED, event -> pasarAlSiguiente(event, rbX2));
+
+        solucionarIgualEcuacionesTeclado(rbX2);
+        solucionarIgualEcuacionesTeclado(rbx);
+        solucionarIgualEcuacionesTeclado(rbc);
+        solucionarIgualEcuacionesTeclado(rbr);
+
+        deshabilitarBotonesTabulador(cientifica);
+        deshabilitarBotonesTabulador(gridPaneBasica);
+        deshabilitarBotonesTabulador(gridPaneEcuaciones);
     }
+    private void pasarAlSiguiente(KeyEvent event, RadioButton next) {
+        if (event.getCode() == KeyCode.TAB) {
+            event.consume();  // Prevenir el comportamiento por defecto del tabulador
+            next.requestFocus();
+            next.setSelected(true);
+        }
+    }
+    private void deshabilitarBotonesTabulador(GridPane gridPane) {
+        gridPane.getChildren().forEach(node -> {
+            if (node instanceof Button) {
+                ((Button) node).setFocusTraversable(false);
+            }
+        });
+    }
+    private void solucionarIgualEcuacionesTeclado(RadioButton radioButton) {
+        radioButton.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.ENTER) {
+                onButtonIgual();
+            }
+        });
+    }
+
     private void setOperandosComplejos(){
         operandosComplejos.add("ln(");
         operandosComplejos.add("sen(");
@@ -246,6 +283,52 @@ public class Controlador implements Initializable {
     @FXML
     protected void onButton9() {
         agregarNumero("9");
+    }
+    public void pasarEscena(Scene scene) {
+        scene.setOnKeyPressed(this::escribirUsandoTeclas);
+    }
+    private void escribirUsandoTeclas(KeyEvent event) {
+        if ((event.getCode() == KeyCode.DIGIT5 || event.getCode() == KeyCode.NUMPAD5) && event.isShiftDown()) {
+            onButtonPorcentaje();
+        } else if (event.getCode() == KeyCode.X) {
+            onButtonX();
+        } else if ((event.getCode() == KeyCode.DIGIT7 || event.getCode() == KeyCode.NUMPAD7) && event.isShiftDown()) {
+            onButtonBarra();
+        } else if (event.getCode() == KeyCode.DIGIT0 || event.getCode() == KeyCode.NUMPAD0) {
+            onButton0();
+        } else if (event.getCode() == KeyCode.DIGIT1 || event.getCode() == KeyCode.NUMPAD1) {
+            onButton1();
+        } else if (event.getCode() == KeyCode.DIGIT2 || event.getCode() == KeyCode.NUMPAD2) {
+            onButton2();
+        } else if (event.getCode() == KeyCode.DIGIT3 || event.getCode() == KeyCode.NUMPAD3) {
+            onButton3();
+        } else if (event.getCode() == KeyCode.DIGIT4 || event.getCode() == KeyCode.NUMPAD4) {
+            onButton4();
+        } else if (event.getCode() == KeyCode.DIGIT5 || event.getCode() == KeyCode.NUMPAD5) {
+            onButton5();
+        } else if (event.getCode() == KeyCode.DIGIT6 || event.getCode() == KeyCode.NUMPAD6) {
+            onButton6();
+        } else if (event.getCode() == KeyCode.DIGIT7 || event.getCode() == KeyCode.NUMPAD7) {
+            onButton7();
+        } else if (event.getCode() == KeyCode.DIGIT8 || event.getCode() == KeyCode.NUMPAD8) {
+            onButton8();
+        } else if (event.getCode() == KeyCode.DIGIT9 || event.getCode() == KeyCode.NUMPAD9) {
+            onButton9();
+        } else if (event.getCode() == KeyCode.BACK_SPACE) {
+            onAtras();
+        } else if (event.getCode() == KeyCode.PLUS || (event.getCode() == KeyCode.EQUALS && event.isShiftDown())) {
+            onButtonMas();
+        } else if (event.getCode() == KeyCode.MINUS) {
+            if(!pantallaEcuaciones) {
+                onButtonMenos();
+            }else {
+                onButtonMasMenos();
+            }
+        } else if (event.getCode() == KeyCode.PERIOD || event.getCode() == KeyCode.DECIMAL) {
+            onButtonPunto();
+        } else if (event.getCode() == KeyCode.E) {
+            onButtonE();
+        }
     }
     @FXML
     protected void onButtonAC() {
@@ -577,7 +660,15 @@ public class Controlador implements Initializable {
         double c = operandoEcuaciones(labelC);
         double r = operandoEcuaciones(labelR);
         double resultado1,resultado2;
-        idEcuacionLabel.setText(a+"x² "+b+"x "+c+" = "+r);
+        String labelx1S = labelx1.getText();
+        String labelCs = labelC.getText();
+        if(!labelx1S.startsWith("-")){
+            labelx1S = "+"+labelx1S;
+        }
+        if(!labelCs.startsWith("-")){
+            labelCs = "+"+labelCs;
+        }
+        idEcuacionLabel.setText(labelx2.getText()+"x² "+labelx1S+"x "+labelCs+" = "+labelR.getText());
         if(a != 0.0) {
             c = c - r;
             double radicando = Math.pow(b, 2) + (-4 * a * c);
@@ -604,7 +695,14 @@ public class Controlador implements Initializable {
     }
     private double operandoEcuaciones(Label pantalla){
         double op = 0;
-        if(!pantalla.getText().isEmpty()){
+        if(contieneLetraExpresion(pantalla.getText())){
+            if(pantalla.getText().startsWith("-")){
+                op = devolverValor(pantalla.getText().substring(1));
+                op *=-1;
+            }else {
+                op = devolverValor(pantalla.getText());
+            }
+        }else if(!pantalla.getText().isEmpty()){
             op = Double.parseDouble(pantalla.getText());
         }
         return op;
@@ -859,6 +957,21 @@ public class Controlador implements Initializable {
         expresionesMatematicas('π');
     }
     private void expresionesMatematicas(char num){
+        if(!pantallaEcuaciones){
+            escribirExpresionMatematicaLabel(pantalla,num);
+        }else {
+            if(rbX2.isSelected()){
+                escribirExpresionMatematicaLabel(labelx2,num);
+            } else if (rbx.isSelected()) {
+                escribirExpresionMatematicaLabel(labelx1,num);
+            } else if (rbc.isSelected()) {
+                escribirExpresionMatematicaLabel(labelC,num);
+            } else if (rbr.isSelected()) {
+                escribirExpresionMatematicaLabel(labelR,num);
+            }
+        }
+    }
+    private void escribirExpresionMatematicaLabel(Label pantalla, char num){
         String txt = pantalla.getText();
         String opComlejo = buscarOperadorComplejo(pantalla.getText());
         int contador = 0;
