@@ -55,3 +55,11 @@
     -fx-font-size: 12px; /* Tamaño de la fuente */
     -fx-font-weight: bold; /* Negrita */
 }
+.canva{
+    -fx-border-width: 1.5px;
+    -fx-border-color: white;
+}
+
+.x{
+    -fx-font-size: 20px;
+}

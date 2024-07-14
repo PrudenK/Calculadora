@@ -8,4 +8,6 @@ module com.example.calculadorafx3 {
 
     opens com.example.calculadorafx3 to javafx.fxml;
     exports com.example.calculadorafx3;
+    exports com.example.calculadorafx3.Operaciones;
+    opens com.example.calculadorafx3.Operaciones to javafx.fxml;
 }
