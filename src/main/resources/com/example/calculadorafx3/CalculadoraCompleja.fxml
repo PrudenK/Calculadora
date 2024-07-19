@@ -7,7 +7,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<Pane onMouseDragged="#arrastrarRaton" onMousePressed="#presionarRaton" prefHeight="460.0" prefWidth="850.0" style="-fx-background-color: black; -fx-border-color: white;" stylesheets="@calc.css" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.calculadorafx3.Controlador">
+<Pane fx:id="original" onMouseDragged="#arrastrarRaton" onMousePressed="#presionarRaton" prefHeight="460.0" prefWidth="850.0" style="-fx-background-color: black; -fx-border-color: white;" stylesheets="@calc.css" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.calculadorafx3.Controlador">
     <padding>
         <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
     </padding>
@@ -17,7 +17,7 @@
             <Font size="20.0" />
         </font>
     </Label>
-    <GridPane fx:id="gridPaneBasica" hgap="5" layoutX="14.0" layoutY="130.0" prefHeight="243.0" prefWidth="247.0" translateY="10.0" vgap="5" visible="false">
+    <GridPane fx:id="gridPaneBasica" hgap="5" layoutX="14.0" layoutY="130.0" prefHeight="243.0" prefWidth="247.0" translateY="10.0" vgap="5" >
         <columnConstraints>
             <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="50.0" />
             <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="50.0" />
@@ -36,29 +36,29 @@
             <Button fx:id="idAC" mnemonicParsing="false" onAction="#onButtonAC" prefHeight="55.0" prefWidth="50.0" styleClass="botones-naranjas" stylesheets="@calc.css" text="AC" />
             <Button fx:id="idAtras" mnemonicParsing="false" onAction="#onAtras" prefHeight="55.0" prefWidth="50.0" styleClass="botones-naranjas-clarito" stylesheets="@calc.css" text="⌫" GridPane.columnIndex="1" />
             <Button fx:id="idMasMenos" mnemonicParsing="false" onAction="#onButtonMasMenos" prefHeight="55.0" prefWidth="50.0" styleClass="botones-azules-claritos" stylesheets="@calc.css" text="±" GridPane.columnIndex="2" />
-            <Button fx:id="idPorcentaje" mnemonicParsing="false" onAction="#onButtonPorcentaje" prefHeight="55.0" prefWidth="50.0" styleClass="botones-azules-claritos" stylesheets="@calc.css" text="\%" GridPane.columnIndex="3" />
-            <Button fx:id="idBarra" mnemonicParsing="false" onAction="#onButtonBarra" prefHeight="55.0" prefWidth="50.0" styleClass="botones-azules" stylesheets="@calc.css" text="/" GridPane.columnIndex="4" />
+            <Button fx:id="idPorcentaje" mnemonicParsing="false" onAction="#Operador" prefHeight="55.0" prefWidth="50.0" styleClass="botones-azules-claritos" stylesheets="@calc.css" text="\%" GridPane.columnIndex="3" />
+            <Button fx:id="idBarra" mnemonicParsing="false" onAction="#Operador" prefHeight="55.0" prefWidth="50.0" styleClass="botones-azules" stylesheets="@calc.css" text="/" GridPane.columnIndex="4" />
 
-            <Button fx:id="id7" mnemonicParsing="false" onAction="#onButton7" prefHeight="55.0" prefWidth="50.0" text="7" GridPane.rowIndex="1" />
-            <Button fx:id="id8" mnemonicParsing="false" onAction="#onButton8" prefHeight="55.0" prefWidth="50.0" text="8" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-            <Button fx:id="id9" mnemonicParsing="false" onAction="#onButton9" prefHeight="55.0" prefWidth="50.0" text="9" GridPane.columnIndex="2" GridPane.rowIndex="1" />
-            <Button fx:id="idX" mnemonicParsing="false" onAction="#onButtonX" prefHeight="55.0" prefWidth="50.0" styleClass="botones-azules-claritos" stylesheets="@calc.css" text="X" GridPane.columnIndex="3" GridPane.rowIndex="1" />
-            <Button fx:id="idPotencia" mnemonicParsing="false" onAction="#onPotencia" prefHeight="55.0" prefWidth="50.0" styleClass="botones-azules" stylesheets="@calc.css" text="^" GridPane.columnIndex="4" GridPane.rowIndex="1" />
+            <Button fx:id="id7" mnemonicParsing="false" onAction="#onNum" prefHeight="55.0" prefWidth="50.0" text="7" GridPane.rowIndex="1" />
+            <Button fx:id="id8" mnemonicParsing="false" onAction="#onNum" prefHeight="55.0" prefWidth="50.0" text="8" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+            <Button fx:id="id9" mnemonicParsing="false" onAction="#onNum" prefHeight="55.0" prefWidth="50.0" text="9" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+            <Button fx:id="idX" mnemonicParsing="false" onAction="#Operador" prefHeight="55.0" prefWidth="50.0" styleClass="botones-azules-claritos" stylesheets="@calc.css" text="x" GridPane.columnIndex="3" GridPane.rowIndex="1" />
+            <Button fx:id="idPotencia" mnemonicParsing="false" onAction="#Operador" prefHeight="55.0" prefWidth="50.0" styleClass="botones-azules" stylesheets="@calc.css" text="^" GridPane.columnIndex="4" GridPane.rowIndex="1" />
 
-            <Button fx:id="id4" mnemonicParsing="false" onAction="#onButton4" prefHeight="55.0" prefWidth="50.0" text="4" GridPane.rowIndex="2" />
-            <Button fx:id="id5" mnemonicParsing="false" onAction="#onButton5" prefHeight="55.0" prefWidth="50.0" text="5" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-            <Button fx:id="id6" mnemonicParsing="false" onAction="#onButton6" prefHeight="55.0" prefWidth="50.0" text="6" GridPane.columnIndex="2" GridPane.rowIndex="2" />
+            <Button fx:id="id4" mnemonicParsing="false" onAction="#onNum" prefHeight="55.0" prefWidth="50.0" text="4" GridPane.rowIndex="2" />
+            <Button fx:id="id5" mnemonicParsing="false" onAction="#onNum" prefHeight="55.0" prefWidth="50.0" text="5" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+            <Button fx:id="id6" mnemonicParsing="false" onAction="#onNum" prefHeight="55.0" prefWidth="50.0" text="6" GridPane.columnIndex="2" GridPane.rowIndex="2" />
             <Button fx:id="idMenos" mnemonicParsing="false" onAction="#onButtonMenos" prefHeight="55.0" prefWidth="50.0" styleClass="botones-azules-claritos" stylesheets="@calc.css" text="-" GridPane.columnIndex="3" GridPane.rowIndex="2" />
             <Button fx:id="idCuadrado" mnemonicParsing="false" onAction="#onCuadrado" prefHeight="55.0" prefWidth="50.0" styleClass="botones-azules" stylesheets="@calc.css" text="^2" GridPane.columnIndex="4" GridPane.rowIndex="2" />
 
-            <Button fx:id="id1" mnemonicParsing="false" onAction="#onButton1" prefHeight="55.0" prefWidth="50.0" text="1" GridPane.rowIndex="3" />
-            <Button fx:id="id2" mnemonicParsing="false" onAction="#onButton2" prefHeight="55.0" prefWidth="50.0" text="2" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-            <Button fx:id="id3" mnemonicParsing="false" onAction="#onButton3" prefHeight="55.0" prefWidth="50.0" text="3" GridPane.columnIndex="2" GridPane.rowIndex="3" />
-            <Button fx:id="idMas" mnemonicParsing="false" onAction="#onButtonMas" prefHeight="55.0" prefWidth="50.0" styleClass="botones-azules-claritos" stylesheets="@calc.css" text="+" GridPane.columnIndex="3" GridPane.rowIndex="3" />
+            <Button fx:id="id1" mnemonicParsing="false" onAction="#onNum" prefHeight="55.0" prefWidth="50.0" text="1" GridPane.rowIndex="3" />
+            <Button fx:id="id2" mnemonicParsing="false" onAction="#onNum" prefHeight="55.0" prefWidth="50.0" text="2" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+            <Button fx:id="id3" mnemonicParsing="false" onAction="#onNum" prefHeight="55.0" prefWidth="50.0" text="3" GridPane.columnIndex="2" GridPane.rowIndex="3" />
+            <Button fx:id="idMas" mnemonicParsing="false" onAction="#Operador" prefHeight="55.0" prefWidth="50.0" styleClass="botones-azules-claritos" stylesheets="@calc.css" text="+" GridPane.columnIndex="3" GridPane.rowIndex="3" />
             <Button fx:id="idRaiz" mnemonicParsing="false" onAction="#onRaiz" prefHeight="55.0" prefWidth="50.0" styleClass="botones-azules" stylesheets="@calc.css" text="√" GridPane.columnIndex="4" GridPane.rowIndex="3" />
 
             <Button fx:id="id00" mnemonicParsing="false" onAction="#onButton00" prefHeight="55.0" prefWidth="50.0" text="00" GridPane.rowIndex="4" />
-            <Button fx:id="id0" mnemonicParsing="false" onAction="#onButton0" prefHeight="55.0" prefWidth="50.0" text="0" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+            <Button fx:id="id0" mnemonicParsing="false" onAction="#onNum" prefHeight="55.0" prefWidth="50.0" text="0" GridPane.columnIndex="1" GridPane.rowIndex="4" />
             <Button fx:id="punto" mnemonicParsing="false" onAction="#onButtonPunto" prefHeight="55.0" prefWidth="50.0" text="." GridPane.columnIndex="2" GridPane.rowIndex="4" />
             <Button fx:id="idIgual" defaultButton="true" mnemonicParsing="false" onAction="#onButtonIgual" prefHeight="55.0" prefWidth="50.0" styleClass="botones-azules-claritos" stylesheets="@calc.css" text="=" GridPane.columnIndex="3" GridPane.rowIndex="4" />
             <Button fx:id="id_Pi" mnemonicParsing="false" onAction="#onPi" prefHeight="55.0" prefWidth="50.0" styleClass="botones-azules" stylesheets="@calc.css" text="π" GridPane.columnIndex="4" GridPane.rowIndex="4" />
@@ -191,10 +191,10 @@
          <Label fx:id="LabelSolucionX2" layoutX="10.0" layoutY="156.0" prefHeight="17.0" prefWidth="133.0" textFill="WHITE" />
       </children>
    </Pane>
-   <Pane fx:id="funcionesPane" layoutX="345.0" layoutY="50.0" prefHeight="384.0" prefWidth="480.0" styleClass="canva" stylesheets="@calc.css" visible="true">
+   <Pane fx:id="funcionesPane" layoutX="345.0" layoutY="50.0" prefHeight="384.0" prefWidth="480.0" styleClass="canva" stylesheets="@calc.css" visible="false">
        <Canvas fx:id="canvasFunciones" height="384.0" width="480.0" />
    </Pane>
-   <GridPane fx:id="gridPaneFunciones" hgap="5" layoutX="14.0" layoutY="130.0" prefHeight="297.0" prefWidth="303.0" translateY="10.0" vgap="5" visible="true">
+   <GridPane fx:id="gridPaneFunciones" hgap="5" layoutX="14.0" layoutY="130.0" prefHeight="297.0" prefWidth="303.0" translateY="10.0" vgap="5" visible="false">
        <columnConstraints>
            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="50.0" />
            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="50.0" />
@@ -215,23 +215,23 @@
            <Button fx:id="idAC2" mnemonicParsing="false" onAction="#onButtonAC" prefHeight="55.0" prefWidth="50.0" styleClass="botones-naranjas" stylesheets="@calc.css" text="AC" />
            <Button fx:id="idAtras2" mnemonicParsing="false" onAction="#onAtras" prefHeight="55.0" prefWidth="50.0" styleClass="botones-naranjas-clarito" stylesheets="@calc.css" text="⌫" GridPane.columnIndex="1" />
            <Button fx:id="idMasMenos2" mnemonicParsing="false" onAction="#onButtonMasMenos" prefHeight="55.0" prefWidth="50.0" styleClass="botones-azules-claritos" stylesheets="@calc.css" text="±" GridPane.columnIndex="2" />
-           <Button fx:id="idBarra2" mnemonicParsing="false" onAction="#onButtonBarra" prefHeight="55.0" prefWidth="50.0" styleClass="botonesCientifica" stylesheets="@calc.css" text="/" GridPane.columnIndex="4" />
+           <Button fx:id="idBarra2" mnemonicParsing="false" onAction="#Operador" prefHeight="55.0" prefWidth="50.0" styleClass="botonesCientifica" stylesheets="@calc.css" text="/" GridPane.columnIndex="4" />
 
-           <Button fx:id="id7_2" mnemonicParsing="false" onAction="#onButton7" prefHeight="55.0" prefWidth="50.0" text="7" GridPane.rowIndex="1" />
-           <Button fx:id="id8_2" mnemonicParsing="false" onAction="#onButton8" prefHeight="55.0" prefWidth="50.0" text="8" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-           <Button fx:id="id9_2" mnemonicParsing="false" onAction="#onButton9" prefHeight="55.0" prefWidth="50.0" text="9" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+           <Button fx:id="id7_2" mnemonicParsing="false" onAction="#onNum" prefHeight="55.0" prefWidth="50.0" text="7" GridPane.rowIndex="1" />
+           <Button fx:id="id8_2" mnemonicParsing="false" onAction="#onNum" prefHeight="55.0" prefWidth="50.0" text="8" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+           <Button fx:id="id9_2" mnemonicParsing="false" onAction="#onNum" prefHeight="55.0" prefWidth="50.0" text="9" GridPane.columnIndex="2" GridPane.rowIndex="1" />
            <Button fx:id="idX_2" mnemonicParsing="false" onAction="#onButtonXFunciones" prefHeight="55.0" prefWidth="50.0" styleClass="botones-azules-claritos" stylesheets="@calc.css" text="x" GridPane.columnIndex="3" GridPane.rowIndex="1" />
-           <Button fx:id="idPotencia_2" mnemonicParsing="false" onAction="#onPotencia" prefHeight="55.0" prefWidth="50.0" styleClass="botones-azules-claritos" stylesheets="@calc.css" text="^" GridPane.columnIndex="3" />
+           <Button fx:id="idPotencia_2" mnemonicParsing="false" onAction="#Operador" prefHeight="55.0" prefWidth="50.0" styleClass="botones-azules-claritos" stylesheets="@calc.css" text="^" GridPane.columnIndex="3" />
 
-           <Button fx:id="id4_2" mnemonicParsing="false" onAction="#onButton4" prefHeight="55.0" prefWidth="50.0" text="4" GridPane.rowIndex="2" />
-           <Button fx:id="id5_2" mnemonicParsing="false" onAction="#onButton5" prefHeight="55.0" prefWidth="50.0" text="5" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-           <Button fx:id="id6_2" mnemonicParsing="false" onAction="#onButton6" prefHeight="55.0" prefWidth="50.0" text="6" GridPane.columnIndex="2" GridPane.rowIndex="2" />
+           <Button fx:id="id4_2" mnemonicParsing="false" onAction="#onNum" prefHeight="55.0" prefWidth="50.0" text="4" GridPane.rowIndex="2" />
+           <Button fx:id="id5_2" mnemonicParsing="false" onAction="#onNum" prefHeight="55.0" prefWidth="50.0" text="5" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+           <Button fx:id="id6_2" mnemonicParsing="false" onAction="#onNum" prefHeight="55.0" prefWidth="50.0" text="6" GridPane.columnIndex="2" GridPane.rowIndex="2" />
            <Button fx:id="idMenos2" mnemonicParsing="false" onAction="#onButtonMenos" prefHeight="55.0" prefWidth="50.0" styleClass="botones-azules-claritos" stylesheets="@calc.css" text="-" GridPane.columnIndex="3" GridPane.rowIndex="2" />
 
-           <Button fx:id="id1_2" mnemonicParsing="false" onAction="#onButton1" prefHeight="55.0" prefWidth="50.0" text="1" GridPane.rowIndex="3" />
-           <Button fx:id="id2_2" mnemonicParsing="false" onAction="#onButton2" prefHeight="55.0" prefWidth="50.0" text="2" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-           <Button fx:id="id3_2" mnemonicParsing="false" onAction="#onButton3" prefHeight="55.0" prefWidth="50.0" text="3" GridPane.columnIndex="2" GridPane.rowIndex="3" />
-           <Button fx:id="idMas_2" mnemonicParsing="false" onAction="#onButtonMas" prefHeight="55.0" prefWidth="50.0" styleClass="botones-azules-claritos" stylesheets="@calc.css" text="+" GridPane.columnIndex="3" GridPane.rowIndex="3" />
+           <Button fx:id="id1_2" mnemonicParsing="false" onAction="#onNum" prefHeight="55.0" prefWidth="50.0" text="1" GridPane.rowIndex="3" />
+           <Button fx:id="id2_2" mnemonicParsing="false" onAction="#onNum" prefHeight="55.0" prefWidth="50.0" text="2" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+           <Button fx:id="id3_2" mnemonicParsing="false" onAction="#onNum" prefHeight="55.0" prefWidth="50.0" text="3" GridPane.columnIndex="2" GridPane.rowIndex="3" />
+           <Button fx:id="idMas_2" mnemonicParsing="false" onAction="#Operador" prefHeight="55.0" prefWidth="50.0" styleClass="botones-azules-claritos" stylesheets="@calc.css" text="+" GridPane.columnIndex="3" GridPane.rowIndex="3" />
            <Button fx:id="RaizX_2" mnemonicParsing="false" onAction="#onRaizX" prefHeight="55.0" prefWidth="50.0" stylesheets="@calc.css" text="ᵡ√" GridPane.columnIndex="5">
             <styleClass>
                <String fx:value="botones-azules-claritos" />
@@ -239,7 +239,7 @@
             </styleClass></Button>
 
            <Button fx:id="id00_2" mnemonicParsing="false" onAction="#onButton00" prefHeight="55.0" prefWidth="50.0" text="00" GridPane.rowIndex="4" />
-           <Button fx:id="id0_2" mnemonicParsing="false" onAction="#onButton0" prefHeight="55.0" prefWidth="50.0" text="0" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+           <Button fx:id="id0_2" mnemonicParsing="false" onAction="#onNum" prefHeight="55.0" prefWidth="50.0" text="0" GridPane.columnIndex="1" GridPane.rowIndex="4" />
            <Button fx:id="punto_2" mnemonicParsing="false" onAction="#onButtonPunto" prefHeight="55.0" prefWidth="50.0" text="." GridPane.columnIndex="2" GridPane.rowIndex="4" />
            <Button fx:id="id_Pi_2" mnemonicParsing="false" onAction="#onPi" prefHeight="55.0" prefWidth="50.0" styleClass="botonesCientifica" stylesheets="@calc.css" text="π" GridPane.columnIndex="4" GridPane.rowIndex="4" />
            <Button fx:id="fi2" mnemonicParsing="false" onAction="#onNumOro" prefHeight="55.0" prefWidth="50.0" styleClass="botonesCientifica" stylesheets="@calc.css" text="φ" GridPane.columnIndex="4" GridPane.rowIndex="3" />
@@ -261,7 +261,7 @@
          </Button>
        </children>
    </GridPane>
-   <Pane fx:id="idPanePantallaFunciones" layoutX="14.0" layoutY="50.0" prefHeight="66.0" prefWidth="320.0">
+   <Pane fx:id="idPanePantallaFunciones" layoutX="14.0" layoutY="50.0" prefHeight="66.0" prefWidth="320.0" visible="false">
       <children>
          <Label layoutX="5.0" prefHeight="66.0" prefWidth="50.0" text="f(x) =">
             <font>
