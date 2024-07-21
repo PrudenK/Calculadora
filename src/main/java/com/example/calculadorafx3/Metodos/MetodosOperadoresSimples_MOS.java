@@ -22,16 +22,15 @@ public class MetodosOperadoresSimples_MOS extends Atributos{
             if((txt.isEmpty() || txt.equals("-")) && operador.equals("-")){
                 onButtonMasMenos_MBP(pantallaFuncionesBolean, pantallaEcuacionesBolean, escribirDentroFunB);
             }else if (!txt.isEmpty() && opComlejo == null) {
-                boolean menos = primerMenos(txt);
-                if ((!txt.endsWith(".") && !menos && contieneCaracteres(txt, pantallaFuncionesBolean)
-                        && txt.charAt(txt.length() - 1) != '-') ||
-                        ((pantallaFuncionesBolean && ((txt.endsWith(")") || (txt.contains("^") && !txt.endsWith("^")) && !txt.endsWith("+") && !txt.endsWith("-") &&
-                                !txt.endsWith("/") && operadorDespuesPotencia(txt, operador)) && !(txt.contains("^") && operador.equals("^")))))
+                if ((!txt.endsWith(".") && !pantallaFuncionesBolean) ||
+                        (operador.equals("-") && !txt.endsWith(".") && !txt.endsWith("-"))
+                        ||
+                        ((pantallaFuncionesBolean && ((txt.endsWith(")") || (txt.contains("^") && txt.lastIndexOf("^") > txt.lastIndexOf("/") && !txt.endsWith("^")) &&
+                                !txt.endsWith("+") && !txt.endsWith("-") && !txt.endsWith("/") && operadorDespuesPotencia(txt, operador)) && !(txt.contains("^") && operador.equals("^")))))
                         || (pantallaFuncionesBolean && operador.equals("/") && !txt.contains("/") && noTerminaEnOperador(txt))
                         || (pantallaFuncionesBolean && operador.equals("-") && (txt.endsWith("/") || txt.endsWith("(") || txt.endsWith("√")))
                         || (pantallaFuncionesBolean && txt.endsWith("x") && !operador.equals("/"))
-                        || (pantallaFuncionesBolean && operador.equals("^")) && txt.contains("/")
-                ) {
+                        || (pantallaFuncionesBolean && operador.equals("^")) && txt.contains("/")){
                     if ((txt.charAt(0) != '-' || txt.length() >= 2) || !txt.equals("-")) {
                         if (pantallaFuncionesBolean) {
                             if (operador.equals("^")) {
@@ -61,7 +60,18 @@ public class MetodosOperadoresSimples_MOS extends Atributos{
                                 }
                             }
                         } else {
-                            pantalla.setText(txt + operador);
+                            String txtPantalla = txt.substring(0, txt.length() - 1) + operador;
+                            if(!txt.endsWith("-")) {
+                                if(txt.endsWith("+") && operador.endsWith("-")){
+                                    pantalla.setText(txtPantalla);
+                                }else if ((!noTerminaEnOperador(txt) || txt.endsWith("%") || txt.endsWith("x")) && !operador.equals("-")) {
+                                    pantalla.setText(txtPantalla);
+                                } else {
+                                    pantalla.setText(txt + operador);
+                                }
+                            }else if(!txt.matches(".*[+^%/x]-$")){
+                                pantalla.setText(txtPantalla);
+                            }
                         }
                     }
                 }
@@ -96,24 +106,6 @@ public class MetodosOperadoresSimples_MOS extends Atributos{
     }
     private static boolean noTerminaEnOperador(String txt){
         return !txt.endsWith("+") && !txt.endsWith("-") && !txt.endsWith("^") && !txt.endsWith("/");
-    }
-    private static boolean primerMenos(String texto){
-        return texto.substring(1).contains("-");
-    }
-    private static boolean contieneCaracteres(String texto, boolean pantallaFuncionesBolean) {
-        if(pantallaFuncionesBolean){
-            return contieneCaracteresPantalla(texto, caracteresProhibidosFunciones);
-        }else {
-            return contieneCaracteresPantalla(texto, caracteresProhibidos);
-        }
-    }
-    private static boolean contieneCaracteresPantalla(String texto,char[] listaCaracteres) {
-        for (char c : listaCaracteres) {
-            if (texto.indexOf(c) != -1) {
-                return false;
-            }
-        }
-        return true;
     }
     public static void extensionMenos_MOS(boolean pantallaFuncionesBolean){
         String txt = pantalla.getText();

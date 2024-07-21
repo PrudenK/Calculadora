@@ -12,11 +12,11 @@ public class MetodosGenerales_MGEN extends Atributos{
     public static double devolverValor_MGEN(String letra){
         double operando = 0;
         if (letra.equals("e")) {
-            operando = 2.7182;
+            operando = Math.E;
         } else if (letra.equals("π")) {
-            operando = 3.1415;
+            operando = Math.PI;
         } else if (letra.equals("φ")) {
-            operando = 1.618;
+            operando = 1.61803398875;
         }
         return operando;
     }
@@ -34,6 +34,23 @@ public class MetodosGenerales_MGEN extends Atributos{
             opDouble *= -1;
         }
         return opDouble;
+    }
+    public static double operandos_para_MISC_MGEN(String op){
+        boolean menosDelante = false;
+        double opDouble;
+        if(op.startsWith("-")){
+            menosDelante = true;
+            op = op.substring(1);
+        }
+        if(contieneLetraExpresion_MGEN(op)){
+            opDouble = devolverValor_MGEN(op);
+        }else {
+            opDouble = Double.parseDouble(op);
+        }
+        if(menosDelante){
+            opDouble *= -1;
+        }
+        return  opDouble;
     }
     public static void escrbirPunto_MGEN(Label pantalla, String txt, boolean ultNumPunto, String antesTxt, String finalC){
         if (!txt.isEmpty() && !txt.equals("-") && !caracteresExcluidos.contains(txt.charAt(txt.length() - 1))
@@ -78,7 +95,7 @@ public class MetodosGenerales_MGEN extends Atributos{
         alert.showAndWait();
     }
     public static int indiceOperador_MGEN(String txt){
-        return IntStream.range(0, txt.length()).filter(i -> "+x/%-^".indexOf(txt.charAt(i)) != -1).findFirst().getAsInt();
+        return IntStream.range(0, txt.length()).filter(i -> "+x/%-^".indexOf(txt.charAt(i)) != -1).findFirst().orElse(-1);
     }
     // Metodo para cuando hay un menos delante y añadimos un operador complejo
     public static void escribirNumPantalla_MGEN(String num, Label pantalla, boolean pantallaFuncionesBolean) {
@@ -104,7 +121,7 @@ public class MetodosGenerales_MGEN extends Atributos{
                     }
                 } else if (opComlejo != null) {
                     if (((!txt.contains("-e") || !txt.contains("e") || (txt.contains(opComlejo) && !txt.contains(opComlejo + "e)") && !txt.contains(opComlejo + "-e)")))
-                            && !txt.contains("π") && !txt.contains("φ") && !txt.contains("-π") && !txt.contains("-φ")) || pantallaFuncionesBolean) {
+                            && !txt.contains("π") && !txt.contains("φ") && !txt.contains("-π") && !txt.contains("-φ"))) {
                         int indiceultimoParentesis = txt.lastIndexOf(")");
                         String cadenaAnterior = txt.substring(0, indiceultimoParentesis);
                         if (txt.contains("(0)") || txt.contains("(-0)")) {
@@ -116,24 +133,17 @@ public class MetodosGenerales_MGEN extends Atributos{
                 } else if (txt.contains("∞")) {
                     pantalla.setText(num);
                 } else {
-                    Pattern pattern = Pattern.compile("^-?\\d*\\.?\\d*[-+x/%^√]-?0$");
-                    Pattern patterPi = Pattern.compile("^-?[φπe][-+x/%^√]-?0$");
-                    Pattern pi = Pattern.compile("^-?[φπe]$");
-                    Pattern piRaiz = Pattern.compile("^-?(e|π|φ|(\\d*\\.?\\d*))√-?[φπe]$");
-                    if (!pi.matcher(pantalla.getText()).matches() && !patronDespuesOperadorNumsEspeciales.matcher(txt).matches() && !piRaiz.matcher(txt).matches() &&
-                            (!pantalla.getText().endsWith("π") || !pantalla.getText().endsWith("e") || !pantalla.getText().endsWith("φ"))) {
-                        if (pantalla.getText().equals("0")) {
-                            pantalla.setText(num);
-                        } else if (pantalla.getText().equals("-0")) {
-                            pantalla.setText("-" + num);
-                        } else if (pattern.matcher(pantalla.getText()).matches() || patterPi.matcher(pantalla.getText()).matches()) {
-                            pantalla.setText(pantalla.getText().substring(0, pantalla.getText().length() - 1) + num);
-                        } else {
-                            pantalla.setText(pantalla.getText() + num);
-                        }
-                    }
+                    escrbirNumSimplePantalla(pantalla, num);
                 }
             }
+        }
+    }
+    private static void escrbirNumSimplePantalla(Label pantalla,String num){
+        String txt = pantalla.getText();
+        if(txt.matches(".*[+\\-x/%^]0$") || txt.equals("0") || txt.equals("-0")){
+            pantalla.setText(txt.substring(0,txt.length()-1)+num);
+        } else if (!txt.matches(".*[φπe]$")) {
+            pantalla.setText(txt+num);
         }
     }
     public static void cuadrado_MGEN() {

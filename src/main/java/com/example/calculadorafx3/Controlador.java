@@ -43,8 +43,7 @@ public class Controlador implements Initializable {
     @FXML protected Label labelx2, labelx1, labelC, labelR, idEcuacionLabel, LabelSolucionX1, LabelSolucionX2;
     @FXML protected GridPane cientifica, gridPaneBasica, gridPaneEcuaciones, gridPaneFunciones;
     @FXML private Pane ecuaciones2Grado, ecuaciones2Grado2, funcionesPane,idPanePantallaFunciones, original;
-    @FXML private Label pantalla, pantallaFunciones, operadorLabelFun, desplazamientoYtrigoFun;
-    @FXML private Text operacionAnteriror;
+    @FXML private Label pantalla, pantallaFunciones, operadorLabelFun, desplazamientoYtrigoFun, operacionAnteriror;
     @FXML private Canvas canvasFunciones;
     private double scale = 30;
     private boolean canvasActivo = false;

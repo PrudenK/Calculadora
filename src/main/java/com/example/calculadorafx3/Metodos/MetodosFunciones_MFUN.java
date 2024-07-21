@@ -123,7 +123,7 @@ public class MetodosFunciones_MFUN {
                     y = funcionRadical(txt,opComplejo,y,x, multiplicandoDelante);
                 } else if(txt.contains("^")) {
                     double exponente = calcularExponenteFuncion(txt);
-                    y = multiplicandoDelante * Math.pow((calcularNumXFunciones(txt, opComplejo) * x) + calcularDesplazamiento(txt, false), exponente) + calcularDesplazamientoY(txt, opComplejo);
+                    y = multiplicandoDelante * calcularNumXFunciones(txt, opComplejo) * Math.pow(x + calcularDesplazamiento(txt, false), exponente) + calcularDesplazamientoY(txt, opComplejo);
                 } else {
                     y = multiplicandoDelante * ((calcularNumXFunciones(txt, opComplejo) * x) + calcularDesplazamientoY(txt, opComplejo));
                 }
@@ -295,22 +295,21 @@ public class MetodosFunciones_MFUN {
         double desplazamientoYDvididendo = 0;
 
         if(yAntes.contains("^")) {
-            yAntesD = multiplicandoDelante * Math.pow((calcularNumXFunciones(yAntes, opComplejoAntes) * x) + calcularDesplazamiento(yAntes, false), calcularExponenteFuncion(yAntes));
+            yAntesD = multiplicandoDelante * (calcularNumXFunciones(yAntes, opComplejoAntes)) *  Math.pow(x + calcularDesplazamiento(yAntes, false), calcularExponenteFuncion(yAntes));
             yAntesD += calcularDesplazamientoY(yAntes, opComplejoAntes);
         }else if(!yAntes.contains("x")){
             yAntesD = Double.parseDouble(yAntes);
         }else {
             yAntesD = multiplicandoDelante * ((calcularNumXFunciones(yAntes, opComplejoAntes) * x) + calcularDesplazamientoY(yAntes, opComplejoAntes));
         }
-
         if(yDespues.contains("x")) {
             if (yDespues.contains("^") && !yDespues.contains("(")) {
-                yDespuesD = multiplicandoSegundo * Math.pow((calcularNumXFunciones(yDespues, opComplejoAntes) * x) + calcularDesplazamiento(yDespues, true), calcularExponenteFuncion(yDespues));
+                yDespuesD = multiplicandoSegundo * (calcularNumXFunciones(yDespues, opComplejoAntes)) *  Math.pow(x + calcularDesplazamiento(yDespues, true), calcularExponenteFuncion(yDespues));
                 desplazamientoYDvididendo = calcularDesplazamientoDividendo(yDespues);
             } else {
                 if (yDespues.contains("(")) {
                     if (yDespues.contains("^")) {
-                        yDespuesD = multiplicandoSegundo * Math.pow((calcularNumXFunciones(yDespues, opComplejoAntes) * x) + calcularDesplazamiento(yDespues, true), calcularExponenteFuncion(yDespues));
+                        yDespuesD = multiplicandoSegundo * (calcularNumXFunciones(yDespues, opComplejoAntes)) *  Math.pow(x + calcularDesplazamiento(yDespues, true), calcularExponenteFuncion(yDespues));
                     } else {
                         yDespuesD = multiplicandoSegundo * ((calcularNumXFunciones(yDespues, opComplejoAntes) * x) + calcularDesplazamientoY(yDespues, opComplejoAntes));
                     }

@@ -1,8 +1,14 @@
 package com.example.calculadorafx3.Metodos;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import static com.example.calculadorafx3.Metodos.MetodosEcuaciones_MECU.calcularEcuaciones_MECU;
 import static com.example.calculadorafx3.Metodos.MetodosFunciones_MFUN.dibujarGrafico_MFUN;
 import static com.example.calculadorafx3.Metodos.MetodosGenerales_MGEN.*;
+import static com.example.calculadorafx3.Metodos.MetodosGenerales_MGEN.operandos_para_MISC_MGEN;
 import static com.example.calculadorafx3.Metodos.MetodosOperandosComplejos_MOC.buscarOperadorComplejo_MOC;
 
 public class MetodosIgualSimpleCompleja_MISC extends Atributos{
@@ -24,9 +30,9 @@ public class MetodosIgualSimpleCompleja_MISC extends Atributos{
                     } else if (opComlejo != null && !txt.endsWith("()") && !txt.endsWith("(-)")) {
                         calcularOpComplejo(txt,menosDelante);
                     } else if (txt.endsWith("+") || txt.endsWith("-") || txt.endsWith("/") || txt.endsWith("x") || txt.endsWith("%") || txt.endsWith("^")) {
-                        mostrarAlerta_MGEN("Introduce el segundo número");
+                        mostrarAlerta_MGEN("La operación no puede terminar con un operador");
                     } else {
-                        calcularSimple(txt,menosDelante,opComlejo);
+                        calcularSimple();
                     }
                 }
             } else {
@@ -143,37 +149,112 @@ public class MetodosIgualSimpleCompleja_MISC extends Atributos{
             pantalla.setText(df.format(resultado));
         }
     }
-    private static void calcularSimple(String txt, boolean menosDelante, String opComlejo){
-        if (txt.equals("π") || txt.equals("φ") || txt.equals("e")) {
-            pantalla.setText(String.valueOf(operandos_MGEN(txt, menosDelante)));
-        }
-        if ((txt.contains("+") || txt.contains("/") || txt.contains("%") || txt.contains("x") || txt.contains("-") || txt.contains("^")) && opComlejo == null) {
-            int indiceOperadorInt = indiceOperador_MGEN(txt);
-            double operando1 = operandos_MGEN(txt.substring(0, indiceOperadorInt), menosDelante);
-            double operando2 = operandos_MGEN(txt.substring(indiceOperadorInt + 1), false);
-            double resultado = 0;
-            if (txt.contains("+")) {
-                resultado = operando1 + operando2;
-            } else if (txt.contains("x")) {
-                resultado = operando1 * operando2;
-            } else if (txt.contains("-")) {
-                resultado = operando1 - operando2;
-            } else if (txt.contains("%")) {
-                if (operando2 == 0.0) {
-                    mostrarAlerta_MGEN("No puedes hacer n % 0 maquinón");
+    private static void calcularSimple(){
+        dividePor0 = false;
+        ArrayList<String> operadoresList = new ArrayList<>();
+        ArrayList<String> numerosList = new ArrayList<>();
+        String txt = pantalla.getText();
+        if (txt.equals("π") || txt.equals("φ") || txt.equals("e") || txt.equals("-π") || txt.equals("-φ") || txt.equals("-e")) {
+            pantalla.setText(String.valueOf(operandos_para_MISC_MGEN(txt)));
+        }else {
+            int anteriorIndice = 0;
+            int indiceSiguienteOperador;
+            do {
+                indiceSiguienteOperador = indiceOperador_MGEN(txt.substring(anteriorIndice));
+
+                if (indiceSiguienteOperador != -1) {
+                    // con esto ajustamos el incio de la cadena
+                    indiceSiguienteOperador += anteriorIndice;
+                    // indiceSiguienteOperador == 0 para cuando la cadena empiece por -, "+x/%^".indexOf(txt.charAt(indiceSiguienteOperador - 1)) != -1 si el caracter de
+                    // después es un operando, en ese caso lo contaremos como número negativo
+                    if (txt.charAt(indiceSiguienteOperador) == '-' && (indiceSiguienteOperador == 0 || "+x/%^".indexOf(txt.charAt(indiceSiguienteOperador - 1)) != -1)) {
+                        // con esto busco el siguiente operador para ver si la cadena termina
+                        int siguienteOperador = indiceOperador_MGEN(txt.substring(indiceSiguienteOperador + 1));
+                        if (siguienteOperador != -1) {
+                            siguienteOperador += indiceSiguienteOperador + 1;
+                            numerosList.add(txt.substring(anteriorIndice, siguienteOperador));
+                            anteriorIndice = siguienteOperador;
+                        } else {
+                            numerosList.add(txt.substring(anteriorIndice));
+                            anteriorIndice = txt.length();
+                        }
+                    } else {
+                        numerosList.add(txt.substring(anteriorIndice, indiceSiguienteOperador));
+                        operadoresList.add(String.valueOf(txt.charAt(indiceSiguienteOperador)));
+                        anteriorIndice = indiceSiguienteOperador + 1;
+                    }
                 } else {
-                    resultado = operando1 % operando2;
+                    // Añadir el último operando (número o variable) a la lista
+                    numerosList.add(txt.substring(anteriorIndice));
                 }
-            } else if (txt.contains("/")) {
-                if (operando2 == 0.0) {
-                    mostrarAlerta_MGEN("No puedes divir por 0 máquina");
-                } else {
-                    resultado = operando1 / operando2;
-                }
-            } else if (txt.contains("^")) {
-                resultado = Math.pow(operando1, operando2);
+
+            } while (indiceSiguienteOperador != -1 && anteriorIndice < txt.length());
+            numerosList.removeIf(String::isEmpty); // uso esto pq con las expresiones del tipo ^- me guarda un espacio en blanco en la lista de los números
+
+            while (operadoresList.contains("^")) {
+                int indicePotencia = operadoresList.lastIndexOf("^");
+                String resultado = String.valueOf(Math.pow(operandos_para_MISC_MGEN(numerosList.get(indicePotencia)), operandos_para_MISC_MGEN(numerosList.get(indicePotencia + 1))));
+                operadoresList.remove(indicePotencia);
+                numerosList.remove(indicePotencia + 1);
+                numerosList.remove(indicePotencia);
+                numerosList.add(indicePotencia, resultado);
             }
-            pantalla.setText(df.format(resultado));
+
+            while (operadoresList.contains("/") || operadoresList.contains("%") || operadoresList.contains("x")) {
+                dividePor0 = calcularBarraMultiModulo(numerosList, operadoresList);
+            }
+
+            while (operadoresList.contains("+") || operadoresList.contains("-")) {
+                calcularMasMenos(numerosList, operadoresList);
+            }
+            if (!dividePor0) {
+                pantalla.setText(df.format(Double.parseDouble(numerosList.get(0))));
+            }
         }
+    }
+    private static boolean dividePor0;
+    private static boolean calcularBarraMultiModulo(ArrayList<String> numerosList, ArrayList<String> operadoresList){
+        int indiceOperador = Collections.min(Stream.of(
+                operadoresList.indexOf("/"),
+                operadoresList.indexOf("%"),
+                operadoresList.indexOf("x")
+        ).filter(indice -> indice != -1).collect(Collectors.toList()));
+        String resultado;
+        if(operadoresList.get(indiceOperador).equals("/")){
+            resultado = String.valueOf(operandos_para_MISC_MGEN(numerosList.get(indiceOperador)) / operandos_para_MISC_MGEN(numerosList.get(indiceOperador+1)));
+            if(operandos_para_MISC_MGEN(numerosList.get(indiceOperador+1)) == 0){
+                mostrarAlerta_MGEN("Qué haces diviendo por 0 tontorron");
+                dividePor0 = true;
+            }
+        }else if(operadoresList.get(indiceOperador).equals("%")){
+            resultado = String.valueOf(operandos_para_MISC_MGEN(numerosList.get(indiceOperador)) % operandos_para_MISC_MGEN(numerosList.get(indiceOperador+1)));
+            if(operandos_para_MISC_MGEN(numerosList.get(indiceOperador+1)) == 0){
+                mostrarAlerta_MGEN("Qué haces haciendo un modulo por 0 espabilao");
+                dividePor0 = true;
+            }
+        }else {
+            resultado = String.valueOf(operandos_para_MISC_MGEN(numerosList.get(indiceOperador)) * operandos_para_MISC_MGEN(numerosList.get(indiceOperador+1)));
+        }
+        operadoresList.remove(indiceOperador);
+        numerosList.remove(indiceOperador+1);
+        numerosList.remove(indiceOperador);
+        numerosList.add(indiceOperador, resultado);
+        return dividePor0;
+    }
+    private static void calcularMasMenos(ArrayList<String> numerosList, ArrayList<String> operadoresList){
+        int indiceOperador = Collections.min(Stream.of(
+                operadoresList.indexOf("+"),
+                operadoresList.indexOf("-")
+        ).filter(indice -> indice != -1).collect(Collectors.toList()));
+        String resultado;
+        if(operadoresList.get(indiceOperador).equals("+")){
+            resultado = String.valueOf(operandos_para_MISC_MGEN(numerosList.get(indiceOperador)) + operandos_para_MISC_MGEN(numerosList.get(indiceOperador+1)));
+        }else {
+            resultado = String.valueOf(operandos_para_MISC_MGEN(numerosList.get(indiceOperador)) - operandos_para_MISC_MGEN(numerosList.get(indiceOperador+1)));
+        }
+        operadoresList.remove(indiceOperador);
+        numerosList.remove(indiceOperador+1);
+        numerosList.remove(indiceOperador);
+        numerosList.add(indiceOperador, resultado);
     }
 }

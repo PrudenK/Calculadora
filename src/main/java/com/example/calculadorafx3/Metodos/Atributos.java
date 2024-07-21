@@ -16,14 +16,13 @@ import java.util.regex.Pattern;
 public class Atributos {
     protected static Pattern patronNumsAntesRaiz, patronDespuesOperadorNumsEspeciales, puntoDespuesDelOperador, patronNumEnteroPositivo, patronCuadradoRaiz;
     protected static Label pantalla, pantallaFunciones, operadorLabelFun, desplazamientoYtrigoFun;
-    protected static Label labelx2, labelx1, labelC, labelR, idEcuacionLabel, LabelSolucionX1, LabelSolucionX2;
+    protected static Label labelx2, labelx1, labelC, labelR, idEcuacionLabel, LabelSolucionX1, LabelSolucionX2, operacionAnteriror;
     protected static RadioButton rbX2, rbx, rbc, rbr;
     protected static char[] caracteresProhibidos, caracteresProhibidosFunciones;
     protected static ArrayList<String> operandosComplejos;
     protected static ArrayList<Button> botonesDesactivarEcuaciones;
     protected static Set<Character> caracteresExcluidos;
     protected static DecimalFormat df;
-    protected static Text operacionAnteriror;
     protected static Canvas canvasFunciones;
     protected static GridPane cientifica, gridPaneBasica, gridPaneEcuaciones, gridPaneFunciones;
     protected static Pane ecuaciones2Grado, ecuaciones2Grado2, funcionesPane,idPanePantallaFunciones, original;
@@ -69,7 +68,7 @@ public class Atributos {
         patronNumEnteroPositivo = numEnteroPositivo;
         patronCuadradoRaiz = cuadradoRaiz;
     }
-    public static void setLabels(Label pantallaOri, Label pantallaFuncionesOri, Label operadorLabelFunOri, Label desplazamientoYtrigoFunOri, Text operacionAnterirorOri) {
+    public static void setLabels(Label pantallaOri, Label pantallaFuncionesOri, Label operadorLabelFunOri, Label desplazamientoYtrigoFunOri, Label operacionAnterirorOri) {
         pantalla = pantallaOri;
         pantallaFunciones = pantallaFuncionesOri;
         operadorLabelFun = operadorLabelFunOri;
