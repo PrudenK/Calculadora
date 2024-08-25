@@ -193,7 +193,11 @@ public class MetodosIgualSimpleCompleja_MISC extends Atributos{
 
             while (operadoresList.contains("^")) {
                 int indicePotencia = operadoresList.lastIndexOf("^");
-                String resultado = String.valueOf(Math.pow(operandos_para_MISC_MGEN(numerosList.get(indicePotencia)), operandos_para_MISC_MGEN(numerosList.get(indicePotencia + 1))));
+                double multiplicandoBase = 1;
+                if(operandos_para_MISC_MGEN(numerosList.get(indicePotencia))< 0){
+                    multiplicandoBase = -1;
+                }
+                String resultado = String.valueOf(multiplicandoBase * Math.pow(operandos_para_MISC_MGEN(numerosList.get(indicePotencia)), operandos_para_MISC_MGEN(numerosList.get(indicePotencia + 1))));
                 operadoresList.remove(indicePotencia);
                 numerosList.remove(indicePotencia + 1);
                 numerosList.remove(indicePotencia);
@@ -209,6 +213,10 @@ public class MetodosIgualSimpleCompleja_MISC extends Atributos{
             }
             if (!dividePor0) {
                 pantalla.setText(df.format(Double.parseDouble(numerosList.get(0))));
+                if(pantalla.getText().equals("NaN")){
+                    pantalla.setText(operacionAnteriror.getText());
+                    mostrarAlerta_MGEN("No puedes hacer la potencia con base negativa y exponente decimal");
+                }
             }
         }
     }

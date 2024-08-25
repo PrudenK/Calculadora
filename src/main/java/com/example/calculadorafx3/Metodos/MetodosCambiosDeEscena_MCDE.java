@@ -9,12 +9,14 @@ public class MetodosCambiosDeEscena_MCDE extends Atributos{
         ajustarStageComun(expand, 850, 460, funcionesPane, gridPaneFunciones, idPanePantallaFunciones);
     }
     public static void ajustarStageCientifica_MCDE(boolean expand) {
+        operacionAnteriror.setPrefWidth(390);
         ajustarStageComun(expand, 437, 403, gridPaneBasica, cientifica);
     }
     public static void ajustarStageEcuaciones_MCDE(boolean expand) {
         ajustarStageComun(expand, 437, 403, gridPaneBasica, ecuaciones2Grado, ecuaciones2Grado2);
     }
     public static void ajustarStageBasica_MCDE(boolean expand){
+        operacionAnteriror.setPrefWidth(190);
         ajustarStageComun(expand, 276, 403, gridPaneBasica);
 
     }
